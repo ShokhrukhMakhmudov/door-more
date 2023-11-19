@@ -1,8 +1,8 @@
 import Footer from "../components/footer/Footer";
-import TaskHeader from "../components/header/TaskHeader";
+import TaskHeader from "../components/call-center/TaskHeader";
 import TaskTableFilter from "../components/filter/TaskTableFilter";
-import TaskTable from "../components/tables/TaskTable";
-import AddNewTaskModal from "../components/modal/AddNewTaskModal";
+import TaskTable from "../components/call-center/TaskTable";
+import AddNewTaskModal from "../components/call-center/AddNewTaskModal";
 import EditTaskModal from "../components/modal/EditTaskModal";
 import ViewTaskModal from "../components/modal/ViewTaskModal";
 
@@ -21,9 +21,9 @@ const CallCenterTasks = () => {
         </div>
       </div>
       <AddNewTaskModal />
-      <EditTaskModal />
-      <ViewTaskModal />
-      <Footer />
+      {/* <EditTaskModal />
+      <ViewTaskModal /> */}
+      {/* <Footer /> */}
     </div>
   );
 };

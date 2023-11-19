@@ -55,6 +55,8 @@ import PricingTable from "./pages/PricingTable";
 import PricingTable2 from "./pages/PricingTable2";
 import UnderConstruction from "./pages/UnderConstruction";
 import CallCenterTasks from "./pages/CallCenterTasks";
+import ManagerTasks from "./pages/ManagerTasks";
+import MeasureTasks from "./pages/MeasureTasks";
 
 function App() {
   return (
@@ -87,6 +89,8 @@ function App() {
           <Route path="/editProfile" element={<EditProfile />} />
           <Route path="/utility" element={<Utility />} />
           <Route path="/callcenter" element={<CallCenterTasks />} />
+          <Route path="/manager" element={<ManagerTasks />} />
+          <Route path="/measure" element={<MeasureTasks />} />
           <Route path="/sweetAlert" element={<SweetAlert />} />
           <Route path="/nestableList" element={<NestableList />} />
           <Route path="/animation" element={<Animation />} />

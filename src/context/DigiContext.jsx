@@ -1,30 +1,29 @@
-import React, { createContext, useEffect, useRef, useState } from 'react'
+import React, { createContext, useEffect, useRef, useState } from "react";
 
-import { audienceData, emailData } from '../data/Data';
-import { toast } from 'react-toastify';
-  const DigiContext = createContext();
-  const DigiContextProvider = ({children}) => {
-  
+import { audienceData, emailData } from "../data/Data";
+import { toast } from "react-toastify";
+const DigiContext = createContext();
+const DigiContextProvider = ({ children }) => {
   //dropdown buttons
   const [isChatDropdownOpen, setChatDropdownOpen] = useState(false);
-  const [isNotificationDropdownOpen, setNotificationDropdownOpen] = useState(false);
-  
+  const [isNotificationDropdownOpen, setNotificationDropdownOpen] =
+    useState(false);
+
   const toggleChatDropdown = () => {
     setChatDropdownOpen((prevState) => !prevState);
     setNotificationDropdownOpen(false);
     setIsProfileSidebarOpen({
-      dropdown:false,
-    })
+      dropdown: false,
+    });
   };
-  
+
   const toggleNotificationDropdown = () => {
     setNotificationDropdownOpen((prevState) => !prevState);
     setChatDropdownOpen(false);
     setIsProfileSidebarOpen({
-      dropdown:false,
-    })
+      dropdown: false,
+    });
   };
-  
 
   //full screen
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -57,58 +56,58 @@ import { toast } from 'react-toastify';
     setIsFullscreen((prevIsFullscreen) => !prevIsFullscreen);
   };
 
-//theme button
-// Theme Selection
-const [themeSelection, setThemeSelection] = useState({
-  default: true,
-  light: false,
-  dark: false,
-});
-
-const handleThemeSelection = (selectedTheme) => {
-  setThemeSelection((prevThemeSelection) => ({
-    ...prevThemeSelection,
-    default: false,
+  //theme button
+  // Theme Selection
+  const [themeSelection, setThemeSelection] = useState({
+    default: true,
     light: false,
     dark: false,
-    [selectedTheme]: true,
-  }));
-};
+  });
+
+  const handleThemeSelection = (selectedTheme) => {
+    setThemeSelection((prevThemeSelection) => ({
+      ...prevThemeSelection,
+      default: false,
+      light: false,
+      dark: false,
+      [selectedTheme]: true,
+    }));
+  };
   // Nav size filter
-  const storedNavState = JSON.parse(localStorage.getItem('navState'));
+  const storedNavState = JSON.parse(localStorage.getItem("navState"));
 
   const [isNavExpanded, setIsNavExpanded] = useState(
     storedNavState || {
       reset: true,
       isSmall: false,
-      hover:false,
-      hoverOpen:false,
+      hover: false,
+      hoverOpen: false,
     }
   );
-  
+
   const toggleNavExpanded = (navSize) => {
     setIsNavExpanded((prevState) => ({
       ...prevState,
       reset: false,
       isSmall: navSize === "small" ? !prevState.isSmall : false,
       hover: navSize === "hover" ? !prevState.hover : false,
-      hoverOpen:false
+      hoverOpen: false,
     }));
     setDashState({
-      isMainDropdownOpen:false,
-    })
+      isMainDropdownOpen: false,
+    });
     setState({
-      isMainDropdownOpen:false,
-    })
+      isMainDropdownOpen: false,
+    });
     setComponentState({
-      isMainDropdownOpen:false,
-    })
+      isMainDropdownOpen: false,
+    });
     setPagesState({
-      isMainDropdownOpen:false,
-    })
-    setIsExpanded(false)
+      isMainDropdownOpen: false,
+    });
+    setIsExpanded(false);
   };
-  
+
   const resetNavSize = () => {
     setIsNavExpanded({
       reset: true,
@@ -116,152 +115,154 @@ const handleThemeSelection = (selectedTheme) => {
       hover: false,
     });
     setDashState({
-      isMainDropdownOpen:false,
-    })
+      isMainDropdownOpen: false,
+    });
     setState({
-      isMainDropdownOpen:false,
-    })
+      isMainDropdownOpen: false,
+    });
     setComponentState({
-      isMainDropdownOpen:false,
-    })
+      isMainDropdownOpen: false,
+    });
     setPagesState({
-      isMainDropdownOpen:false,
-    })
-    setIsExpanded(false)
+      isMainDropdownOpen: false,
+    });
+    setIsExpanded(false);
   };
-  
+
   const handleNavHover = () => {
     setIsNavExpanded((prevState) => ({
       ...prevState,
       hoverOpen: false,
     }));
   };
-  
+
   const handleNavHoverEnd = () => {
     setIsNavExpanded((prevState) => ({
       ...prevState,
       hoverOpen: true,
     }));
+    toggleNav();
   };
-  
+
   useEffect(() => {
-    localStorage.setItem('navState', JSON.stringify(isNavExpanded));
+    localStorage.setItem("navState", JSON.stringify(isNavExpanded));
   }, [isNavExpanded]);
 
-// Nav position
-const [layoutPosition, setLayoutPosition] = useState({
-  vertical: true,
-  horizontal: false,
-  twoColumn:false,
-  flush:false,
-});
+  // Nav position
+  const [layoutPosition, setLayoutPosition] = useState({
+    vertical: true,
+    horizontal: false,
+    twoColumn: false,
+    flush: false,
+  });
 
-const handleLayoutPosition = (id) => {
-  setLayoutPosition((prevCheckboxes) => {
-    const updatedCheckboxes = {
-      ...Object.fromEntries(
-        Object.entries(prevCheckboxes).map(([key]) => [key, false])
+  const handleLayoutPosition = (id) => {
+    setLayoutPosition((prevCheckboxes) => {
+      const updatedCheckboxes = {
+        ...Object.fromEntries(
+          Object.entries(prevCheckboxes).map(([key]) => [key, false])
+        ),
+        [id]: !prevCheckboxes[id],
+      };
+
+      if (updatedCheckboxes.horizontal) {
+        setIsNavExpanded((prevState) => ({
+          ...prevState,
+          isSmall: false,
+          reset: true,
+          hover: false,
+          hoverOpen: false,
+        }));
+        setIsExpanded(false);
+      }
+
+      return updatedCheckboxes;
+    });
+  };
+
+  const [dropdownOpen, setDropdownOpen] = useState({
+    dashboard: false,
+    apps: false,
+    pages: false,
+    component: false,
+  });
+
+  const handleDropdownClick = (dropdown) => {
+    setDropdownOpen((prevState) => ({
+      ...Object.keys(prevState).reduce(
+        (acc, key) => ({ ...acc, [key]: false }),
+        {}
       ),
-      [id]: !prevCheckboxes[id],
-    };
+      [dropdown]: !prevState[dropdown], // Toggle the value of the targeted dropdown
+    }));
+  };
 
-    if (updatedCheckboxes.horizontal) {
-      setIsNavExpanded((prevState) => ({
-        ...prevState,
-        isSmall: false,
-        reset:true,
-        hover:false,
-        hoverOpen:false
-      }));
-      setIsExpanded(false)
+  // Light Theme
+  const [isLightTheme, setIsLightTheme] = useState(false);
+
+  const handleLightThemeToggle = () => {
+    setThemeSelection({ default: false });
+    setIsDarkTheme(false);
+    setIsLightTheme((prevIsLightTheme) => !prevIsLightTheme);
+    const bodyElement = document.body;
+    const divElement = document.querySelector(".body-padding.body-p-top");
+
+    bodyElement.classList.toggle("light-theme");
+    divElement.classList.toggle("light-theme");
+
+    if (bodyElement.classList.contains("dark-theme")) {
+      bodyElement.classList.remove("dark-theme");
+    }
+    if (divElement.classList.contains("dark-theme")) {
+      divElement.classList.remove("dark-theme");
+    }
+    if (isLightTheme) {
+      divElement.classList.add("blue-theme");
+    } else {
+      divElement.classList.remove("blue-theme");
     }
 
-    return updatedCheckboxes;
-  });
-};
+    handleThemeSelection("light");
+  };
 
-const [dropdownOpen, setDropdownOpen] = useState({
-  dashboard: false,
-  apps: false,
-  pages: false,
-  component: false,
-});
+  // Dark Theme
+  const [isDarkTheme, setIsDarkTheme] = useState(false);
 
-const handleDropdownClick = (dropdown) => {
-  setDropdownOpen((prevState) => ({
-    ...Object.keys(prevState).reduce((acc, key) => ({ ...acc, [key]: false }), {}),
-    [dropdown]: !prevState[dropdown], // Toggle the value of the targeted dropdown
-  }));
-};
+  const handleDarkThemeToggle = () => {
+    setIsLightTheme(false);
+    setIsDarkTheme((prevIsDarkTheme) => !prevIsDarkTheme);
+    const bodyElement = document.body;
+    const divElement = document.querySelector(".body-padding.body-p-top");
 
+    bodyElement.classList.toggle("dark-theme");
+    divElement.classList.toggle("dark-theme");
 
+    if (bodyElement.classList.contains("light-theme")) {
+      bodyElement.classList.remove("light-theme");
+    }
+    if (divElement.classList.contains("light-theme")) {
+      divElement.classList.remove("light-theme");
+    }
+    if (divElement.classList.contains("blue-theme")) {
+      divElement.classList.remove("blue-theme");
+    }
 
-// Light Theme
-const [isLightTheme, setIsLightTheme] = useState(false);
+    handleThemeSelection("dark");
+  };
 
-const handleLightThemeToggle = () => {
-  setThemeSelection({default:false})
-  setIsDarkTheme(false);
-  setIsLightTheme((prevIsLightTheme) => !prevIsLightTheme);
-  const bodyElement = document.body;
-  const divElement = document.querySelector('.body-padding.body-p-top');
-  
-  bodyElement.classList.toggle('light-theme');
-  divElement.classList.toggle('light-theme');
-  
-  if (bodyElement.classList.contains('dark-theme')) {
-    bodyElement.classList.remove('dark-theme');
-  }
-  if (divElement.classList.contains('dark-theme')) {
-    divElement.classList.remove('dark-theme');
-  }
-  if (isLightTheme) {
-    divElement.classList.add('blue-theme');
-  } else {
-    divElement.classList.remove('blue-theme');
-  }
-  
-  handleThemeSelection('light');
-};
+  // Reset or Default Theme
+  const handleResetTheme = () => {
+    setIsLightTheme(false);
+    setIsDarkTheme(false);
+    const bodyElement = document.body;
+    const divElement = document.querySelector(".body-padding.body-p-top");
 
-// Dark Theme
-const [isDarkTheme, setIsDarkTheme] = useState(false);
+    bodyElement.classList.remove("light-theme", "dark-theme");
+    divElement.classList.remove("light-theme", "dark-theme");
+    divElement.classList.add("blue-theme");
 
-const handleDarkThemeToggle = () => {
-  setIsLightTheme(false)
-  setIsDarkTheme((prevIsDarkTheme) => !prevIsDarkTheme);
-  const bodyElement = document.body;
-  const divElement = document.querySelector('.body-padding.body-p-top');
-  
-  bodyElement.classList.toggle('dark-theme');
-  divElement.classList.toggle('dark-theme');
-  
-  if (bodyElement.classList.contains('light-theme')) {
-    bodyElement.classList.remove('light-theme');
-  }
-  if (divElement.classList.contains('light-theme')) {
-    divElement.classList.remove('light-theme');
-  }
-  if (divElement.classList.contains('blue-theme')) {
-    divElement.classList.remove('blue-theme');
-  }
-  
-  handleThemeSelection('dark');
-};
-
-// Reset or Default Theme
-const handleResetTheme = () => {
-  setIsLightTheme(false);
-  setIsDarkTheme(false);
-  const bodyElement = document.body;
-  const divElement = document.querySelector('.body-padding.body-p-top');
-
-  bodyElement.classList.remove('light-theme', 'dark-theme');
-  divElement.classList.remove('light-theme', 'dark-theme');
-  divElement.classList.add('blue-theme');
-
-  handleThemeSelection('default');
-};
+    handleThemeSelection("default");
+  };
 
   //Settings button
   const [isSettingsOpen, setSettingsOpen] = useState(false);
@@ -278,10 +279,10 @@ const handleResetTheme = () => {
   };
 
   useEffect(() => {
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
@@ -291,14 +292,14 @@ const handleResetTheme = () => {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
-  // Header Button 
-  const [headerBtnOpen,setHeaderBtnOpen] = useState(false)
+  // Header Button
+  const [headerBtnOpen, setHeaderBtnOpen] = useState(false);
   const handleHeaderBtn = () => {
-      setHeaderBtnOpen(!headerBtnOpen)
-  }
-  const handleHeaderReset = () =>{
-      setHeaderBtnOpen(false)
-  }
+    setHeaderBtnOpen(!headerBtnOpen);
+  };
+  const handleHeaderReset = () => {
+    setHeaderBtnOpen(false);
+  };
 
   const headerRef = useRef(null);
 
@@ -311,40 +312,42 @@ const handleResetTheme = () => {
 
   // Use the useEffect hook to attach the event listener on component mount
   useEffect(() => {
-    document.addEventListener('click', handleOutsideClick);
+    document.addEventListener("click", handleOutsideClick);
 
     // Clean up the event listener on component unmount
     return () => {
-      document.removeEventListener('click', handleOutsideClick);
+      document.removeEventListener("click", handleOutsideClick);
     };
   }, []);
 
   // Table dropdown btn
-  const [tableFilterBtnOpen, setTableFilterBtnOpen] = useState(false)
+  const [tableFilterBtnOpen, setTableFilterBtnOpen] = useState(false);
   const handleTableFilterBtn = () => {
-    setTableFilterBtnOpen(!tableFilterBtnOpen)
-  }
+    setTableFilterBtnOpen(!tableFilterBtnOpen);
+  };
   const handleTableFilterReset = () => {
-    setTableFilterBtnOpen(false)
-  }
+    setTableFilterBtnOpen(false);
+  };
 
-  
   const tableFilterRef = useRef(null);
 
   // This function will be called when a click happens outside the component
   const handleTableOutsideClick = (event) => {
-    if (tableFilterRef.current && !tableFilterRef.current.contains(event.target)) {
+    if (
+      tableFilterRef.current &&
+      !tableFilterRef.current.contains(event.target)
+    ) {
       setTableFilterBtnOpen(false);
     }
   };
 
   // Use the useEffect hook to attach the event listener on component mount
   useEffect(() => {
-    document.addEventListener('click', handleTableOutsideClick);
+    document.addEventListener("click", handleTableOutsideClick);
 
     // Clean up the event listener on component unmount
     return () => {
-      document.removeEventListener('click', handleTableOutsideClick);
+      document.removeEventListener("click", handleTableOutsideClick);
     };
   }, []);
 
@@ -355,7 +358,8 @@ const handleResetTheme = () => {
 
   const handleCheckboxChange = (index) => {
     const updatedDataList = [...dataList];
-    updatedDataList[indexOfFirstData + index].isChecked = !updatedDataList[indexOfFirstData + index].isChecked;
+    updatedDataList[indexOfFirstData + index].isChecked =
+      !updatedDataList[indexOfFirstData + index].isChecked;
     setDataList(updatedDataList);
   };
 
@@ -378,47 +382,45 @@ const handleResetTheme = () => {
   // Scroll
   const [scrollbarPosition, setScrollbarPosition] = useState(0);
 
-
   const updateScrollbarPosition = (position) => {
     setScrollbarPosition(position);
   };
 
   // Add new task modal
-    const [showAddNewTaskModal, setShowAddNewTaskModal] = useState(false);
+  const [showAddNewTaskModal, setShowAddNewTaskModal] = useState(false);
 
-    const handleShowAddNewTaskModal = () => {
-      setShowAddNewTaskModal(true);
-    };
-  
-    const handleCloseAddNewTaskModal = () => {
-      setShowAddNewTaskModal(false);
-    };
+  const handleShowAddNewTaskModal = () => {
+    setShowAddNewTaskModal(true);
+  };
+
+  const handleCloseAddNewTaskModal = () => {
+    setShowAddNewTaskModal(false);
+  };
 
   // View task modal
-    const [viewTaskModalOpen, setViewTaskModalOpen] = useState(false)
-    
-    const handleViewTaskModalShow = () => {
-        setViewTaskModalOpen(true)
-    }
+  const [viewTaskModalOpen, setViewTaskModalOpen] = useState(false);
 
-    const handleViewTaskModalClose = () => {
-        setViewTaskModalOpen(false)
-    }
-  
+  const handleViewTaskModalShow = () => {
+    setViewTaskModalOpen(true);
+  };
 
-// Dashboard part
+  const handleViewTaskModalClose = () => {
+    setViewTaskModalOpen(false);
+  };
+
+  // Dashboard part
   const initialDashState = {
     isMainDropdownOpen: false,
   };
 
   const [dashState, setDashState] = useState(
-    localStorage.getItem('dashState')
-      ? JSON.parse(localStorage.getItem('dashState'))
+    localStorage.getItem("dashState")
+      ? JSON.parse(localStorage.getItem("dashState"))
       : initialDashState
   );
 
   useEffect(() => {
-    localStorage.setItem('dashState', JSON.stringify(dashState));
+    localStorage.setItem("dashState", JSON.stringify(dashState));
   }, [dashState]);
 
   const toggleMainDashDropdown = () => {
@@ -434,7 +436,7 @@ const handleResetTheme = () => {
         },
       };
 
-      handleDropdownClick('dashboard');
+      handleDropdownClick("dashboard");
 
       return updatedState;
     });
@@ -453,33 +455,30 @@ const handleResetTheme = () => {
           apps: false,
           pages: false,
           component: false,
-        })
+        });
       }
     };
 
-    if (
-      dropdownOpen.dashboard
-    ) {
-      document.addEventListener('mousedown', handleClickOutside);
+    if (dropdownOpen.dashboard) {
+      document.addEventListener("mousedown", handleClickOutside);
     }
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [
-    dropdownOpen.dashboard
-  ]);
-
+  }, [dropdownOpen.dashboard]);
 
   // Apps part dropdowns
 
   // Retrieve the initial state from localStorage or set it to false
   const initialState = {
-    isMainDropdownOpen: localStorage.getItem('appState') ? JSON.parse(localStorage.getItem('appState')).isMainDropdownOpen : false,
+    isMainDropdownOpen: localStorage.getItem("appState")
+      ? JSON.parse(localStorage.getItem("appState")).isMainDropdownOpen
+      : false,
     isCrmDropdownOpen: false,
     isHrmDropdownOpen: false,
     isEcommerceDropdownOpen: false,
-    isSubDropdownOpen: false
+    isSubDropdownOpen: false,
   };
   const [state, setState] = useState(initialState);
 
@@ -488,76 +487,76 @@ const handleResetTheme = () => {
     setState({
       ...state,
       isMainDropdownOpen: false,
-      isSubDropdownOpen: false
+      isSubDropdownOpen: false,
     });
   };
 
   // Save the state to localStorage whenever it changes
   useEffect(() => {
-    localStorage.setItem('appState', JSON.stringify(state));
+    localStorage.setItem("appState", JSON.stringify(state));
   }, [state]);
 
   // Modify toggleCrmDropdown function
   const toggleCrmDropdown = () => {
-    setState(prevState => ({
+    setState((prevState) => ({
       ...prevState,
       isCrmDropdownOpen: !prevState.isCrmDropdownOpen,
       isHrmDropdownOpen: false,
       isEcommerceDropdownOpen: false,
-      isSubDropdownOpen: !prevState.isCrmDropdownOpen
+      isSubDropdownOpen: !prevState.isCrmDropdownOpen,
     }));
     setComponentState({
-      advance:false,
-      multipleLevel:false,
-    })
+      advance: false,
+      multipleLevel: false,
+    });
     setPagesState({
-      authentication:false,
-      user:false,
-      error:false,
-      additional:false
-    })
+      authentication: false,
+      user: false,
+      error: false,
+      additional: false,
+    });
   };
 
   // Modify toggleHrmDropdown function
   const toggleHrmDropdown = () => {
-    setState(prevState => ({
+    setState((prevState) => ({
       ...prevState,
       isHrmDropdownOpen: !prevState.isHrmDropdownOpen,
       isCrmDropdownOpen: false,
       isEcommerceDropdownOpen: false,
-      isSubDropdownOpen: !prevState.isHrmDropdownOpen
+      isSubDropdownOpen: !prevState.isHrmDropdownOpen,
     }));
     setComponentState({
-      advance:false,
-      multipleLevel:false,
-    })
+      advance: false,
+      multipleLevel: false,
+    });
     setPagesState({
-      authentication:false,
-      user:false,
-      error:false,
-      additional:false
-    })
+      authentication: false,
+      user: false,
+      error: false,
+      additional: false,
+    });
   };
 
   // Modify toggleEcommerceDropdown function
   const toggleEcommerceDropdown = () => {
-    setState(prevState => ({
+    setState((prevState) => ({
       ...prevState,
       isEcommerceDropdownOpen: !prevState.isEcommerceDropdownOpen,
       isCrmDropdownOpen: false,
       isHrmDropdownOpen: false,
-      isSubDropdownOpen: !prevState.isEcommerceDropdownOpen
+      isSubDropdownOpen: !prevState.isEcommerceDropdownOpen,
     }));
     setComponentState({
-      advance:false,
-      multipleLevel:false,
-    })
+      advance: false,
+      multipleLevel: false,
+    });
     setPagesState({
-      authentication:false,
-      user:false,
-      error:false,
-      additional:false
-    })
+      authentication: false,
+      user: false,
+      error: false,
+      additional: false,
+    });
   };
 
   // No modifications needed for toggleMainDropdown function
@@ -574,7 +573,7 @@ const handleResetTheme = () => {
         },
       };
 
-      handleDropdownClick('apps');
+      handleDropdownClick("apps");
 
       return updatedState;
     });
@@ -594,47 +593,46 @@ const handleResetTheme = () => {
           isCrmDropdownOpen: false,
           isHrmDropdownOpen: false,
           isEcommerceDropdownOpen: false,
-          isSubDropdownOpen: false
+          isSubDropdownOpen: false,
         }));
         setComponentState({
           advance: false,
-          multipleLevel: false
+          multipleLevel: false,
         });
         setPagesState({
           authentication: false,
           user: false,
-          error:false,
-          additional:false
+          error: false,
+          additional: false,
         });
         setDropdownOpen({
           dashboard: false,
           apps: false,
           pages: false,
           component: false,
-        })
-        console.log('apps part outside click');
+        });
+        console.log("apps part outside click");
       }
     };
-  
+
     if (
       state.isCrmDropdownOpen ||
       state.isHrmDropdownOpen ||
       state.isEcommerceDropdownOpen ||
       dropdownOpen.apps
     ) {
-      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside);
     }
-  
+
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [
     state.isCrmDropdownOpen,
     state.isHrmDropdownOpen,
     state.isEcommerceDropdownOpen,
-    dropdownOpen.apps
+    dropdownOpen.apps,
   ]);
-  
 
   // Components Part
 
@@ -649,13 +647,13 @@ const handleResetTheme = () => {
   };
 
   const [componentState, setComponentState] = useState(
-    localStorage.getItem('componentState')
-      ? JSON.parse(localStorage.getItem('componentState'))
+    localStorage.getItem("componentState")
+      ? JSON.parse(localStorage.getItem("componentState"))
       : initialComponentState
   );
 
   useEffect(() => {
-    localStorage.setItem('componentState', JSON.stringify(componentState));
+    localStorage.setItem("componentState", JSON.stringify(componentState));
   }, [componentState]);
 
   const toggleComponentMainDropdown = () => {
@@ -671,12 +669,11 @@ const handleResetTheme = () => {
         },
       };
 
-      handleDropdownClick('component');
+      handleDropdownClick("component");
 
       return updatedState;
     });
   };
-
 
   const toggleAdvance = () => {
     setComponentState((prevState) => ({
@@ -691,13 +688,13 @@ const handleResetTheme = () => {
       isCrmDropdownOpen: false,
       isHrmDropdownOpen: false,
       isEcommerceDropdownOpen: false,
-    })
+    });
     setPagesState({
-      authentication:false,
-      user:false,
-      error:false,
-      additional:false
-    })
+      authentication: false,
+      user: false,
+      error: false,
+      additional: false,
+    });
   };
 
   const toggleMultipleLevel = () => {
@@ -706,20 +703,20 @@ const handleResetTheme = () => {
       multipleLevel: !prevState.multipleLevel,
       firstLevel: false,
       secondLevel: false,
-      advance:false,
+      advance: false,
       isSubComponentDropdownOpen: !prevState.multipleLevel,
     }));
     setState({
       isCrmDropdownOpen: false,
       isHrmDropdownOpen: false,
       isEcommerceDropdownOpen: false,
-    })
+    });
     setPagesState({
-      authentication:false,
-      user:false,
-      error:false,
-      additional:false
-    })
+      authentication: false,
+      user: false,
+      error: false,
+      additional: false,
+    });
   };
 
   const toggleFirstLevel = () => {
@@ -758,64 +755,63 @@ const handleResetTheme = () => {
           isCrmDropdownOpen: false,
           isHrmDropdownOpen: false,
           isEcommerceDropdownOpen: false,
-          isSubDropdownOpen: false
+          isSubDropdownOpen: false,
         }));
         setComponentState({
           advance: false,
-          multipleLevel: false
+          multipleLevel: false,
         });
         setPagesState({
           authentication: false,
           user: false,
-          error:false,
-          additional:false
+          error: false,
+          additional: false,
         });
         setDropdownOpen({
           dashboard: false,
           apps: false,
           pages: false,
           component: false,
-        })
-        console.log('components part outside click');
+        });
+        console.log("components part outside click");
       }
     };
 
     if (
       componentState.advance ||
-      componentState.multipleLevel || 
+      componentState.multipleLevel ||
       dropdownOpen.component
     ) {
-      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside);
     }
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [
     componentState.advance,
     componentState.multipleLevel,
-    dropdownOpen.component
+    dropdownOpen.component,
   ]);
-
 
   // Pages part
   const initialPagesState = {
     isMainDropdownOpen: false,
     isSubDropdownOpen: false,
     authentication: false,
-    error:false,
+    error: false,
     user: false,
-    additional:false
+    additional: false,
   };
 
   const [pagesState, setPagesState] = useState(
-    localStorage.getItem('pagesState')
-      ? JSON.parse(localStorage.getItem('pagesState'))
+    localStorage.getItem("pagesState")
+      ? JSON.parse(localStorage.getItem("pagesState"))
       : initialPagesState
   );
 
   useEffect(() => {
-    localStorage.setItem('pagesState', JSON.stringify(pagesState));
+    localStorage.setItem("pagesState", JSON.stringify(pagesState));
   }, [pagesState]);
 
   const toggleMainPagesDropdown = () => {
@@ -829,16 +825,15 @@ const handleResetTheme = () => {
           apps: false,
           pages: !prevState.isMainDropdownOpen, // Toggle the 'pages' dropdown
           component: false,
-          additional:false
+          additional: false,
         },
       };
 
-      handleDropdownClick('pages');
+      handleDropdownClick("pages");
 
       return updatedState;
     });
   };
-
 
   const toggleSubPagesDropdown = () => {
     setPagesState((prevState) => ({
@@ -853,18 +848,18 @@ const handleResetTheme = () => {
       ...prevState,
       authentication: !prevState.authentication,
       user: false,
-      error:false,
-      additional:false
+      error: false,
+      additional: false,
     }));
     setState({
       isCrmDropdownOpen: false,
       isHrmDropdownOpen: false,
       isEcommerceDropdownOpen: false,
-    })
+    });
     setComponentState({
-      advance:false,
-      multipleLevel:false,
-    })
+      advance: false,
+      multipleLevel: false,
+    });
   };
 
   const toggleUser = () => {
@@ -872,54 +867,54 @@ const handleResetTheme = () => {
       ...prevState,
       user: !prevState.user,
       authentication: false,
-      error:false,
-      additional:false
+      error: false,
+      additional: false,
     }));
     setState({
       isCrmDropdownOpen: false,
       isHrmDropdownOpen: false,
       isEcommerceDropdownOpen: false,
-    })
+    });
     setComponentState({
-      advance:false,
-      multipleLevel:false,
-    })
+      advance: false,
+      multipleLevel: false,
+    });
   };
   const toggleError = () => {
     setPagesState((prevState) => ({
       ...prevState,
       user: false,
       authentication: false,
-      error:!prevState.error,
-      additional:false
+      error: !prevState.error,
+      additional: false,
     }));
     setState({
       isCrmDropdownOpen: false,
       isHrmDropdownOpen: false,
       isEcommerceDropdownOpen: false,
-    })
+    });
     setComponentState({
-      advance:false,
-      multipleLevel:false,
-    })
+      advance: false,
+      multipleLevel: false,
+    });
   };
   const toggleAdditional = () => {
     setPagesState((prevState) => ({
       ...prevState,
       user: false,
       authentication: false,
-      error:false,
-      additional:!prevState.additional
+      error: false,
+      additional: !prevState.additional,
     }));
     setState({
       isCrmDropdownOpen: false,
       isHrmDropdownOpen: false,
       isEcommerceDropdownOpen: false,
-    })
+    });
     setComponentState({
-      advance:false,
-      multipleLevel:false,
-    })
+      advance: false,
+      multipleLevel: false,
+    });
   };
   const mainPagesRef = useRef(null);
 
@@ -935,108 +930,99 @@ const handleResetTheme = () => {
           isCrmDropdownOpen: false,
           isHrmDropdownOpen: false,
           isEcommerceDropdownOpen: false,
-          isSubDropdownOpen: false
+          isSubDropdownOpen: false,
         }));
         setComponentState({
           advance: false,
-          multipleLevel: false
+          multipleLevel: false,
         });
         setPagesState({
           authentication: false,
           user: false,
-          error:false,
-          additional:false
+          error: false,
+          additional: false,
         });
         setDropdownOpen({
           dashboard: false,
           apps: false,
           pages: false,
           component: false,
-        })
-        console.log('pages part outside click');
+        });
+        console.log("pages part outside click");
       }
     };
 
-    if (
-      pagesState.authentication ||
-      pagesState.user ||
-      dropdownOpen.pages
-    ) {
-      document.addEventListener('mousedown', handleClickOutside);
+    if (pagesState.authentication || pagesState.user || dropdownOpen.pages) {
+      document.addEventListener("mousedown", handleClickOutside);
     }
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [
-    pagesState.authentication,
-    pagesState.user,
-    dropdownOpen.pages
-  ]);
+  }, [pagesState.authentication, pagesState.user, dropdownOpen.pages]);
 
+  //nav button
+  const [isExpanded, setIsExpanded] = useState(false);
 
-//nav button
-const [isExpanded, setIsExpanded] = useState(false);
+  const toggleNav = () => {
+    setIsExpanded((prevState) => !prevState);
+    setDashState({
+      isMainDropdownOpen: false,
+    });
+    setState({
+      isMainDropdownOpen: false,
+    });
+    setComponentState({
+      isMainDropdownOpen: false,
+    });
+    setPagesState({
+      isMainDropdownOpen: false,
+    });
+  };
+  // Search in Chat
+  const [searchInChat, SetSearchInChat] = useState(false);
+  const handleSearchInChat = () => {
+    SetSearchInChat(!searchInChat);
+  };
 
-const toggleNav = () => {
-  setIsExpanded((prevState) => !prevState);
-  setDashState({
-    isMainDropdownOpen:false,
-  })
-  setState({
-    isMainDropdownOpen:false,
-  })
-  setComponentState({
-    isMainDropdownOpen:false,
-  })
-  setPagesState({
-    isMainDropdownOpen:false,
-  })
-};
-// Search in Chat
-const [searchInChat,SetSearchInChat] = useState(false)
-const handleSearchInChat = () => {
-    SetSearchInChat(!searchInChat)
-}
+  // Password Visible
+  const [passwordVisible, setPasswordVisible] = useState(false);
 
-// Password Visible
-const [passwordVisible, setPasswordVisible] = useState(false);
+  const togglePasswordVisibility = () => {
+    setPasswordVisible(!passwordVisible);
+  };
 
-const togglePasswordVisibility = () => {
-  setPasswordVisible(!passwordVisible);
-};
+  // File upload modal
+  const [uploadModalOpen, setUploadModalOpen] = useState(false);
+  const handleUploadModalShow = () => {
+    setUploadModalOpen(true);
+  };
+  const handleUploadModalClose = () => {
+    setUploadModalOpen(false);
+  };
 
-// File upload modal
-const [uploadModalOpen,setUploadModalOpen] = useState(false)
-const handleUploadModalShow = () => {
-    setUploadModalOpen(true)
-}
-const handleUploadModalClose = () => {
-    setUploadModalOpen(false)
-}
+  // Create new folder modal
+  const [newFolderModal, setNewFolderModal] = useState(false);
+  const handleNewFolderModalClose = () => {
+    setNewFolderModal(false);
+  };
+  const handleNewFolderModalOpen = () => {
+    setNewFolderModal(true);
+  };
 
-// Create new folder modal
-const [newFolderModal,setNewFolderModal] = useState(false)
-const handleNewFolderModalClose = () => {
-  setNewFolderModal(false)
-}
-const handleNewFolderModalOpen = () => {
-  setNewFolderModal(true)
-}
+  // file details modal
+  const [fileDeatailsModalOpen, setFileDetailsModalOpen] = useState(false);
 
-// file details modal
-const [fileDeatailsModalOpen,setFileDetailsModalOpen] = useState(false)
+  const handleFileDetailsModalShow = () => {
+    setFileDetailsModalOpen(true);
+  };
+  const handleFileDetailsModalClose = () => {
+    setFileDetailsModalOpen(false);
+  };
 
-const handleFileDetailsModalShow = () =>{
-  setFileDetailsModalOpen(true)
-}
-const handleFileDetailsModalClose = () =>{
-  setFileDetailsModalOpen(false)
-}
-
-// Permalink
-const [title, setTitle] = useState('');
-  const [permalink, setPermalink] = useState('');
+  // Permalink
+  const [title, setTitle] = useState("");
+  const [permalink, setPermalink] = useState("");
 
   const handleTitleChange = (event) => {
     setTitle(event.target.value);
@@ -1044,514 +1030,555 @@ const [title, setTitle] = useState('');
   };
 
   const generatePermalink = (value) => {
-    const formattedTitle = value.toLowerCase().replace(/\s+/g, '-');
+    const formattedTitle = value.toLowerCase().replace(/\s+/g, "-");
     setPermalink(`https://example.com/${formattedTitle}`);
   };
 
   const handleEditPermalink = () => {
-    const editPermalinkInput = document.getElementById('editPermalink');
+    const editPermalinkInput = document.getElementById("editPermalink");
     editPermalinkInput.value = permalink;
     editPermalinkInput.hidden = false;
-    document.getElementById('editPermaBtn').hidden = true;
-    document.getElementById('createPerma').hidden = false;
-    document.getElementById('cancelPerma').hidden = false;
+    document.getElementById("editPermaBtn").hidden = true;
+    document.getElementById("createPerma").hidden = false;
+    document.getElementById("cancelPerma").hidden = false;
   };
 
   const handleUpdatePermalink = () => {
-    const updatedPermalink = document.getElementById('editPermalink').value;
+    const updatedPermalink = document.getElementById("editPermalink").value;
     setPermalink(updatedPermalink);
-    document.getElementById('editPermalink').hidden = true;
-    document.getElementById('editPermaBtn').hidden = false;
-    document.getElementById('createPerma').hidden = true;
-    document.getElementById('cancelPerma').hidden = true;
+    document.getElementById("editPermalink").hidden = true;
+    document.getElementById("editPermaBtn").hidden = false;
+    document.getElementById("createPerma").hidden = true;
+    document.getElementById("cancelPerma").hidden = true;
   };
 
   const handleCancelPermalink = () => {
-    document.getElementById('editPermalink').hidden = true;
-    document.getElementById('editPermaBtn').hidden = false;
-    document.getElementById('createPerma').hidden = true;
-    document.getElementById('cancelPerma').hidden = true;
+    document.getElementById("editPermalink").hidden = true;
+    document.getElementById("editPermaBtn").hidden = false;
+    document.getElementById("createPerma").hidden = true;
+    document.getElementById("cancelPerma").hidden = true;
   };
 
-// Email page
-const [currentEmailPage, setCurrentEmailPage] = useState(1);
-const [dataPerEmailPage] = useState(10);
-const dataEmailList = emailData;
+  // Email page
+  const [currentEmailPage, setCurrentEmailPage] = useState(1);
+  const [dataPerEmailPage] = useState(10);
+  const dataEmailList = emailData;
 
-// Pagination logic
-const indexOfLastEmailData = currentEmailPage * dataPerEmailPage;
-const indexOfFirstEmailData = indexOfLastEmailData - dataPerEmailPage;
-const currentEmailData = dataEmailList.slice(
-  indexOfFirstEmailData,
-  indexOfLastEmailData
-);
+  // Pagination logic
+  const indexOfLastEmailData = currentEmailPage * dataPerEmailPage;
+  const indexOfFirstEmailData = indexOfLastEmailData - dataPerEmailPage;
+  const currentEmailData = dataEmailList.slice(
+    indexOfFirstEmailData,
+    indexOfLastEmailData
+  );
 
-const paginateEmail = (pageNumber) => {
-  setCurrentEmailPage(pageNumber);
-};
+  const paginateEmail = (pageNumber) => {
+    setCurrentEmailPage(pageNumber);
+  };
 
-// Calculate total number of email pages
-const totalEmailPages = Math.ceil(dataEmailList.length / dataPerEmailPage);
-const emailPageNumbers = [];
-for (let i = 1; i <= totalEmailPages; i++) {
-  emailPageNumbers.push(i);
-}
+  // Calculate total number of email pages
+  const totalEmailPages = Math.ceil(dataEmailList.length / dataPerEmailPage);
+  const emailPageNumbers = [];
+  for (let i = 1; i <= totalEmailPages; i++) {
+    emailPageNumbers.push(i);
+  }
 
-// Mail details
+  // Mail details
 
-const [mailDetailsOpen,setMailDetailsOpen] = useState(false)
+  const [mailDetailsOpen, setMailDetailsOpen] = useState(false);
 
-const handleMailDetailsBtn = () => {
-  setMailDetailsOpen(true)
-}
-const handleMailDetailClose = () => {
-  setMailDetailsOpen(false)
-}
+  const handleMailDetailsBtn = () => {
+    setMailDetailsOpen(true);
+  };
+  const handleMailDetailClose = () => {
+    setMailDetailsOpen(false);
+  };
 
-// mail details modal
-const [showMailModal, setShowMailModal] = useState(false);
+  // mail details modal
+  const [showMailModal, setShowMailModal] = useState(false);
 
   const handleMailClose = () => setShowMailModal(false);
   const handleMailShow = () => setShowMailModal(true);
-// compose mail modal
-    const [showComposeMail, setShowComposeMail] = useState(false);
-  
-    const handleComposeMailClose = () => setShowComposeMail(false);
-    const handleComposeMailShow = () => setShowComposeMail(true);
+  // compose mail modal
+  const [showComposeMail, setShowComposeMail] = useState(false);
+
+  const handleComposeMailClose = () => setShowComposeMail(false);
+  const handleComposeMailShow = () => setShowComposeMail(true);
   //main background image filter
-  const [selectedBackground, setSelectedBackground] = useState('');
+  const [selectedBackground, setSelectedBackground] = useState("");
 
   const handleBackgroundChange = (backgroundUrl) => {
     setSelectedBackground(backgroundUrl);
   };
 
   const resetBackground = () => {
-    setSelectedBackground('');
+    setSelectedBackground("");
   };
 
   const backgroundImageStyle = {
-    backgroundImage: selectedBackground ? `url(${selectedBackground})` : 'none',
+    backgroundImage: selectedBackground ? `url(${selectedBackground})` : "none",
   };
   // sidebar background image filter
-  const [selectedSidebarBackground, setSelectedSidebarBackground] = useState('');
+  const [selectedSidebarBackground, setSelectedSidebarBackground] =
+    useState("");
 
   const handleSidebarBackgroundChange = (backgroundUrl) => {
     setSelectedSidebarBackground(backgroundUrl);
   };
 
   const resetSidebarBackground = () => {
-    setSelectedSidebarBackground('');
+    setSelectedSidebarBackground("");
   };
 
   const sidebarBackgroundImageStyle = {
-    backgroundImage: selectedSidebarBackground ? `url(${selectedSidebarBackground})` : 'none',
+    backgroundImage: selectedSidebarBackground
+      ? `url(${selectedSidebarBackground})`
+      : "none",
   };
 
-// right sidebar
+  // right sidebar
 
-// Right Sidebar dropdowns
-const [rightSideDropdown,setRightSideDropdown] = useState({
-  navPosition:true,
-  primaryColor:true,
-  themeColor:true,
-  navSize:true,
-  sideBackground:true,
-  mainBackground:true,
-})
-  
-const handleRightSideDropdownToggle = (dropdown) => {
-  setRightSideDropdown((prevState) => ({
-    ...prevState,
-    [dropdown]: !prevState[dropdown],
-  }));
-};
+  // Right Sidebar dropdowns
+  const [rightSideDropdown, setRightSideDropdown] = useState({
+    navPosition: true,
+    primaryColor: true,
+    themeColor: true,
+    navSize: true,
+    sideBackground: true,
+    mainBackground: true,
+  });
 
-// Primary color selection
-const [primaryColor, setPrimaryColor] = useState(() => {
-  // Retrieve the initial state from local storage or set it to the default value
-  const storedPrimaryColor = localStorage.getItem('primaryColor');
-  return storedPrimaryColor ? JSON.parse(storedPrimaryColor) : {
-    blue: true,
-    deep_pink: false,
-    eagle_green: false,
-    gold: false,
-    green: false,
-    orange: false,
-    pink: false,
-    purple: false,
-    tea_green: false,
-    yellow_green: false,
-  };
-});
-
-useEffect(() => {
-  // Update the primary color stylesheet based on the selected color
-  const primaryColorStylesheet = document.getElementById('primaryColor');
-  const selectedColor = Object.keys(primaryColor).find((color) => primaryColor[color]);
-
-  if (primaryColorStylesheet) {
-    primaryColorStylesheet.setAttribute('href', `assets/css/${selectedColor}-color.css`);
-  }
-
-  // Save the primaryColor state to local storage
-  localStorage.setItem('primaryColor', JSON.stringify(primaryColor));
-}, [primaryColor]);
-
-const handleColorSelectionToggle = (color) => {
-  setPrimaryColor((prevState) => ({
-    ...Object.fromEntries(Object.entries(prevState).map(([key]) => [key, false])),
-    [color]: true,
-  }));
-};
-
-// Calender Code
-const [currentEvents, setCurrentEvents] = useState([]);
-const [addNewEventModal,setAddNewEventModal] = useState(false);
-const [selectedDate, setSelectedDate] = useState(null);
-const calendarRef = useRef(null);
-const [selectedEvent, setSelectedEvent] = useState(null);
-
-
-let eventGuid = 0;
-const todayStr = new Date().toISOString().replace(/T.*$/, ''); // YYYY-MM-DD of today
-
-const createEventId = () => {
-  return String(eventGuid++);
-};
-
-const INITIAL_EVENTS = [
-  {
-    id: createEventId(),
-    title: 'All-day event',
-    start: todayStr,
-    classNames: 'bg-info',
-  },
-  {
-    id: createEventId(),
-    title: 'Timed event',
-    start: new Date(new Date().setDate(new Date().getDate() + 3)).toISOString().replace(/T.*$/, '') + 'T12:00:00',
-    classNames: 'bg-primary',
-  },
-  {
-    id: createEventId(),
-    title: 'Meeting',
-    start: new Date(new Date().setDate(new Date().getDate() + 4)).toISOString().replace(/T.*$/, ''),
-    classNames: 'bg-danger',
-  },
-  {
-    id: createEventId(),
-    title: 'Conference',
-    start: new Date(new Date().setDate(new Date().getDate() + 7)).toISOString().replace(/T.*$/, ''),
-    classNames: 'bg-warning',
-  },
-  {
-    id: createEventId(),
-    title: 'Team outing',
-    start: new Date(new Date().setDate(new Date().getDate() + 10)).toISOString().replace(/T.*$/, ''),
-    classNames: 'bg-info',
-  },
-  {
-    id: createEventId(),
-    title: 'Workout',
-    start: new Date(new Date().setDate(new Date().getDate() - 9)).toISOString().replace(/T.*$/, ''),
-    classNames: 'bg-success',
-  },
-  {
-    id: createEventId(),
-    title: 'Tour',
-    start: new Date(new Date().setDate(new Date().getDate() + 12)).toISOString().replace(/T.*$/, ''),
-    classNames: 'bg-info',
-  },
-  {
-    id: createEventId(),
-    title: 'Online Meeting',
-    start: new Date(new Date().setDate(new Date().getDate() - 7)).toISOString().replace(/T.*$/, ''),
-    classNames: 'bg-warning',
-  },
-  {
-    id: createEventId(),
-    title: 'Perfomance Review',
-    start: new Date(new Date().setDate(new Date().getDate() - 10)).toISOString().replace(/T.*$/, ''),
-    classNames: 'bg-info',
-  },
-  {
-    id: createEventId(),
-    title: 'Work Schedule',
-    start: new Date(new Date().setDate(new Date().getDate() - 12)).toISOString().replace(/T.*$/, ''),
-    classNames: 'bg-success',
-  },
-  {
-    id: createEventId(),
-    title: 'Spa',
-    start: new Date(new Date().setDate(new Date().getDate() - 14)).toISOString().replace(/T.*$/, ''),
-    classNames: 'bg-info',
-  },
-  {
-    id: createEventId(),
-    title: 'Concert',
-    start: new Date(new Date().setDate(new Date().getDate() - 16)).toISOString().replace(/T.*$/, ''),
-    classNames: 'bg-primary',
-  },
-];
-
-  
-const handleDateSelect = (selectInfo) => {
-  selectInfo.view.calendar.unselect(); // clear date selection
-  setSelectedDate(selectInfo.startStr);
-  setAddNewEventModal(true);
-};
-const handleEventClick = (clickInfo) => {
-  setSelectedEvent(clickInfo.event);
-  setDeleteConfirmationModal(true);
-};
-
-
-const handleEvents = (events) => {
-  setCurrentEvents(events);
-};
-
-const handleSaveEvent = (title, category) => {
-  // Check if title is empty or null
-  if (!title || title.trim() === "") {
-    toast.error("Event title is required!");
-    return;
-  }
-
-  // Adding a new event
-  const newEvent = {
-    id: createEventId(),
-    title,
-    start: selectedDate,
-    classNames: category, // Set the classNames property
-    allDay: true,
-    extendedProps: {
-      category,
-    },
+  const handleRightSideDropdownToggle = (dropdown) => {
+    setRightSideDropdown((prevState) => ({
+      ...prevState,
+      [dropdown]: !prevState[dropdown],
+    }));
   };
 
-  setCurrentEvents((prevEvents) => [...prevEvents, newEvent]);
+  // Primary color selection
+  const [primaryColor, setPrimaryColor] = useState(() => {
+    // Retrieve the initial state from local storage or set it to the default value
+    const storedPrimaryColor = localStorage.getItem("primaryColor");
+    return storedPrimaryColor
+      ? JSON.parse(storedPrimaryColor)
+      : {
+          blue: true,
+          deep_pink: false,
+          eagle_green: false,
+          gold: false,
+          green: false,
+          orange: false,
+          pink: false,
+          purple: false,
+          tea_green: false,
+          yellow_green: false,
+        };
+  });
 
-  const calendarApi = calendarRef.current.getApi();
-  calendarApi.addEvent(newEvent);
-  toast.success("A new event is created!")
-};
+  useEffect(() => {
+    // Update the primary color stylesheet based on the selected color
+    const primaryColorStylesheet = document.getElementById("primaryColor");
+    const selectedColor = Object.keys(primaryColor).find(
+      (color) => primaryColor[color]
+    );
 
-const handleAddNewModalHide = () => {
-  setAddNewEventModal(false);
-  setSelectedEvent(null);
-};
-const renderEventContent = (eventInfo) => {
-  return (
-    <>
-      <b>{eventInfo.timeText}</b>
-      <i>{eventInfo.event.title}</i>
-    </>
-  );
-};
-const handleDeleteEvent = (id) => {
-  setCurrentEvents((prevEvents) => prevEvents.filter((event) => event.id !== id));
-};
-const [deleteConfirmationModal, setDeleteConfirmationModal] = useState(false);
-
-const handleDelete = () => {
-  const calendarApi = calendarRef.current.getApi();
-  selectedEvent.remove();
-  calendarApi.unselect();
-  toast.warning('The selected event deleted!')
-
-};
-
-const handleCloseDeleteConfirmationModal = () => {
-  setDeleteConfirmationModal(false);
-};
-
-// mini sidebar
-const [isSidebarOpen, setSidebarOpen] = useState(false);
-const [isSmallScreen, setIsSmallScreen] = useState(false);
-
-useEffect(() => {
-  const checkScreenSize = () => {
-    setIsSmallScreen(window.innerWidth < 1200);
-  };
-
-  checkScreenSize();
-  window.addEventListener('resize', checkScreenSize);
-
-  return () => {
-    window.removeEventListener('resize', checkScreenSize);
-  };
-}, []);
-
-const toggleSidebar = () => {
-  setSidebarOpen(!isSidebarOpen);
-};
-const ref = useRef(null);
-
-useEffect(() => {
-  const handleClickOutside = (event) => {
-    // Check if the sidebar is open and the clicked element is not inside the sidebar
-    if (isSidebarOpen && !event.target.closest('.main-sidebar') && !event.target.closest('.nav-close-btn')) {
-      setSidebarOpen(false);
+    if (primaryColorStylesheet) {
+      primaryColorStylesheet.setAttribute(
+        "href",
+        `assets/css/${selectedColor}-color.css`
+      );
     }
+
+    // Save the primaryColor state to local storage
+    localStorage.setItem("primaryColor", JSON.stringify(primaryColor));
+  }, [primaryColor]);
+
+  const handleColorSelectionToggle = (color) => {
+    setPrimaryColor((prevState) => ({
+      ...Object.fromEntries(
+        Object.entries(prevState).map(([key]) => [key, false])
+      ),
+      [color]: true,
+    }));
   };
 
-  // Bind the event listener to detect clicks outside the sidebar
-  document.addEventListener('mousedown', handleClickOutside);
+  // Calender Code
+  const [currentEvents, setCurrentEvents] = useState([]);
+  const [addNewEventModal, setAddNewEventModal] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(null);
+  const calendarRef = useRef(null);
+  const [selectedEvent, setSelectedEvent] = useState(null);
 
-  // Cleanup the event listener on unmount
-  return () => {
-    document.removeEventListener('mousedown', handleClickOutside);
+  let eventGuid = 0;
+  const todayStr = new Date().toISOString().replace(/T.*$/, ""); // YYYY-MM-DD of today
+
+  const createEventId = () => {
+    return String(eventGuid++);
   };
-}, [isSidebarOpen, setSidebarOpen]);
 
-  const [mobileHeaderBtn,setMobileHeaderBtn] = useState(false)
+  const INITIAL_EVENTS = [
+    {
+      id: createEventId(),
+      title: "All-day event",
+      start: todayStr,
+      classNames: "bg-info",
+    },
+    {
+      id: createEventId(),
+      title: "Timed event",
+      start:
+        new Date(new Date().setDate(new Date().getDate() + 3))
+          .toISOString()
+          .replace(/T.*$/, "") + "T12:00:00",
+      classNames: "bg-primary",
+    },
+    {
+      id: createEventId(),
+      title: "Meeting",
+      start: new Date(new Date().setDate(new Date().getDate() + 4))
+        .toISOString()
+        .replace(/T.*$/, ""),
+      classNames: "bg-danger",
+    },
+    {
+      id: createEventId(),
+      title: "Conference",
+      start: new Date(new Date().setDate(new Date().getDate() + 7))
+        .toISOString()
+        .replace(/T.*$/, ""),
+      classNames: "bg-warning",
+    },
+    {
+      id: createEventId(),
+      title: "Team outing",
+      start: new Date(new Date().setDate(new Date().getDate() + 10))
+        .toISOString()
+        .replace(/T.*$/, ""),
+      classNames: "bg-info",
+    },
+    {
+      id: createEventId(),
+      title: "Workout",
+      start: new Date(new Date().setDate(new Date().getDate() - 9))
+        .toISOString()
+        .replace(/T.*$/, ""),
+      classNames: "bg-success",
+    },
+    {
+      id: createEventId(),
+      title: "Tour",
+      start: new Date(new Date().setDate(new Date().getDate() + 12))
+        .toISOString()
+        .replace(/T.*$/, ""),
+      classNames: "bg-info",
+    },
+    {
+      id: createEventId(),
+      title: "Online Meeting",
+      start: new Date(new Date().setDate(new Date().getDate() - 7))
+        .toISOString()
+        .replace(/T.*$/, ""),
+      classNames: "bg-warning",
+    },
+    {
+      id: createEventId(),
+      title: "Perfomance Review",
+      start: new Date(new Date().setDate(new Date().getDate() - 10))
+        .toISOString()
+        .replace(/T.*$/, ""),
+      classNames: "bg-info",
+    },
+    {
+      id: createEventId(),
+      title: "Work Schedule",
+      start: new Date(new Date().setDate(new Date().getDate() - 12))
+        .toISOString()
+        .replace(/T.*$/, ""),
+      classNames: "bg-success",
+    },
+    {
+      id: createEventId(),
+      title: "Spa",
+      start: new Date(new Date().setDate(new Date().getDate() - 14))
+        .toISOString()
+        .replace(/T.*$/, ""),
+      classNames: "bg-info",
+    },
+    {
+      id: createEventId(),
+      title: "Concert",
+      start: new Date(new Date().setDate(new Date().getDate() - 16))
+        .toISOString()
+        .replace(/T.*$/, ""),
+      classNames: "bg-primary",
+    },
+  ];
+
+  const handleDateSelect = (selectInfo) => {
+    selectInfo.view.calendar.unselect(); // clear date selection
+    setSelectedDate(selectInfo.startStr);
+    setAddNewEventModal(true);
+  };
+  const handleEventClick = (clickInfo) => {
+    setSelectedEvent(clickInfo.event);
+    setDeleteConfirmationModal(true);
+  };
+
+  const handleEvents = (events) => {
+    setCurrentEvents(events);
+  };
+
+  const handleSaveEvent = (title, category) => {
+    // Check if title is empty or null
+    if (!title || title.trim() === "") {
+      toast.error("Event title is required!");
+      return;
+    }
+
+    // Adding a new event
+    const newEvent = {
+      id: createEventId(),
+      title,
+      start: selectedDate,
+      classNames: category, // Set the classNames property
+      allDay: true,
+      extendedProps: {
+        category,
+      },
+    };
+
+    setCurrentEvents((prevEvents) => [...prevEvents, newEvent]);
+
+    const calendarApi = calendarRef.current.getApi();
+    calendarApi.addEvent(newEvent);
+    toast.success("A new event is created!");
+  };
+
+  const handleAddNewModalHide = () => {
+    setAddNewEventModal(false);
+    setSelectedEvent(null);
+  };
+  const renderEventContent = (eventInfo) => {
+    return (
+      <>
+        <b>{eventInfo.timeText}</b>
+        <i>{eventInfo.event.title}</i>
+      </>
+    );
+  };
+  const handleDeleteEvent = (id) => {
+    setCurrentEvents((prevEvents) =>
+      prevEvents.filter((event) => event.id !== id)
+    );
+  };
+  const [deleteConfirmationModal, setDeleteConfirmationModal] = useState(false);
+
+  const handleDelete = () => {
+    const calendarApi = calendarRef.current.getApi();
+    selectedEvent.remove();
+    calendarApi.unselect();
+    toast.warning("The selected event deleted!");
+  };
+
+  const handleCloseDeleteConfirmationModal = () => {
+    setDeleteConfirmationModal(false);
+  };
+
+  // mini sidebar
+  const [isSidebarOpen, setSidebarOpen] = useState(false);
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
+
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsSmallScreen(window.innerWidth < 1200);
+    };
+
+    checkScreenSize();
+    window.addEventListener("resize", checkScreenSize);
+
+    return () => {
+      window.removeEventListener("resize", checkScreenSize);
+    };
+  }, []);
+
+  const toggleSidebar = () => {
+    setSidebarOpen(!isSidebarOpen);
+  };
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      // Check if the sidebar is open and the clicked element is not inside the sidebar
+      if (
+        isSidebarOpen &&
+        !event.target.closest(".main-sidebar") &&
+        !event.target.closest(".nav-close-btn")
+      ) {
+        setSidebarOpen(false);
+      }
+    };
+
+    // Bind the event listener to detect clicks outside the sidebar
+    document.addEventListener("mousedown", handleClickOutside);
+
+    // Cleanup the event listener on unmount
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isSidebarOpen, setSidebarOpen]);
+
+  const [mobileHeaderBtn, setMobileHeaderBtn] = useState(false);
 
   const handleMobileHeaderBtn = () => {
-    setMobileHeaderBtn(!mobileHeaderBtn)
-  }
-
-// chat modal
-const [showVoiceCall,setShowVoiceCall] = useState(false);
-const handleCloseVoiceCall = () => {
-    setShowVoiceCall(false)
-}
-const handleShowVoiceCall = () => {
-    setShowVoiceCall(true)
-}
-const [showVideoCall,setShowVideoCall] = useState(false);
-const handleCloseVideoCall = () => {
-    setShowVideoCall(false)
-}
-const handleShowVideoCall = () => {
-    setShowVideoCall(true)
-}
-
-// React date range 
-const [inputValue, setInputValue] = useState('');
-const [showDatePicker, setShowDatePicker] = useState(false);
-const [selectedDateRange, setSelectedDateRange] = useState([
-  {
-    startDate: new Date(),
-    endDate: new Date(),
-    key: 'selection',
-  },
-]);
-
-const handleInputChange = (e) => {
-  setInputValue(e.target.value);
-};
-
-const handleDateRangeChange = (ranges) => {
-  setSelectedDateRange([ranges.selection]);
-  const formattedStartDate = ranges.selection.startDate.toLocaleDateString();
-  const formattedEndDate = ranges.selection.endDate.toLocaleDateString();
-  setInputValue(`${formattedStartDate} - ${formattedEndDate}`);
-};
-
-const handleDateRangeSelection = () => {
-  setShowDatePicker(!showDatePicker);
-};
-
-const dateRangeSelectionRef = useRef(null)
-useEffect(() => {
-  // Function to handle outside clicks
-  const handleClickOutside = (event) => {
-    if (dateRangeSelectionRef.current && !dateRangeSelectionRef.current.contains(event.target)) {
-      setShowDatePicker(false);
-    }
+    setMobileHeaderBtn(!mobileHeaderBtn);
   };
 
-  // Bind the event listener
-  document.addEventListener('mousedown', handleClickOutside);
-
-  // Cleanup the event listener on unmount
-  return () => {
-    document.removeEventListener('mousedown', handleClickOutside);
+  // chat modal
+  const [showVoiceCall, setShowVoiceCall] = useState(false);
+  const handleCloseVoiceCall = () => {
+    setShowVoiceCall(false);
   };
-}, []);
-
-// mobile email button
-const [mobileEmailBtn, setMobileEmailBtn] = useState(false);
-
-const handleMobileEmailBtn = () => {
-  setMobileEmailBtn((prevMobileEmailBtn) => !prevMobileEmailBtn);
-};
-
-const emailRef = useRef(null);
-
-useEffect(() => {
-  const handleClickOutside = (event) => {
-    // Check if the sidebar is open and the clicked element is not inside the sidebar
-    if (
-      mobileEmailBtn &&
-      !event.target.closest('.panel-body.email-menu') &&
-      !event.target.closest('.mobile-email-btn')
-    ) {
-      setMobileEmailBtn(false);
-    }
+  const handleShowVoiceCall = () => {
+    setShowVoiceCall(true);
+  };
+  const [showVideoCall, setShowVideoCall] = useState(false);
+  const handleCloseVideoCall = () => {
+    setShowVideoCall(false);
+  };
+  const handleShowVideoCall = () => {
+    setShowVideoCall(true);
   };
 
-  // Bind the event listener to detect clicks outside the sidebar
-  document.addEventListener('mousedown', handleClickOutside);
+  // React date range
+  const [inputValue, setInputValue] = useState("");
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [selectedDateRange, setSelectedDateRange] = useState([
+    {
+      startDate: new Date(),
+      endDate: new Date(),
+      key: "selection",
+    },
+  ]);
 
-  // Cleanup the event listener on unmount
-  return () => {
-    document.removeEventListener('mousedown', handleClickOutside);
-  };
-}, [mobileEmailBtn]);
-
-
-// mobile File Manager button
-const [mobileFileManagerBtn,setMobileFileManagerBtn] = useState(false)
-
-const handleMobileFileManagerBtn = () => {
-  setMobileFileManagerBtn((prevMobileFileManagerBtn) => !prevMobileFileManagerBtn);
-}
-const fileManagerRef = useRef(null);
-
-useEffect(() => {
-  const handleClickOutside = (event) => {
-    // Check if the sidebar is open and the clicked element is not inside the sidebar
-    if (
-      mobileFileManagerBtn &&
-      !event.target.closest('.file-manager-sidebar') &&
-      !event.target.closest('.mobile-file-manager-btn')
-    ) {
-      setMobileFileManagerBtn(false);
-    }
+  const handleInputChange = (e) => {
+    setInputValue(e.target.value);
   };
 
-  // Bind the event listener to detect clicks outside the sidebar
-  document.addEventListener('mousedown', handleClickOutside);
-
-  // Cleanup the event listener on unmount
-  return () => {
-    document.removeEventListener('mousedown', handleClickOutside);
-  };
-}, [mobileFileManagerBtn]);
-// small device 
-const [smallDevice, setSmallDevice] = useState(false);
-
-useEffect(() => {
-  const handleResize = () => {
-    const isSmallDevice = window.innerWidth < 575;
-    setSmallDevice(isSmallDevice);
+  const handleDateRangeChange = (ranges) => {
+    setSelectedDateRange([ranges.selection]);
+    const formattedStartDate = ranges.selection.startDate.toLocaleDateString();
+    const formattedEndDate = ranges.selection.endDate.toLocaleDateString();
+    setInputValue(`${formattedStartDate} - ${formattedEndDate}`);
   };
 
-  // Initial check on component mount
-  handleResize();
-
-  // Event listener for window resize
-  window.addEventListener('resize', handleResize);
-
-  // Cleanup the event listener on component unmount
-  return () => {
-    window.removeEventListener('resize', handleResize);
+  const handleDateRangeSelection = () => {
+    setShowDatePicker(!showDatePicker);
   };
-}, []);
 
-// Below 1700px
-const [isBelowLg, setIsBelowLg] = useState(false);
+  const dateRangeSelectionRef = useRef(null);
+  useEffect(() => {
+    // Function to handle outside clicks
+    const handleClickOutside = (event) => {
+      if (
+        dateRangeSelectionRef.current &&
+        !dateRangeSelectionRef.current.contains(event.target)
+      ) {
+        setShowDatePicker(false);
+      }
+    };
+
+    // Bind the event listener
+    document.addEventListener("mousedown", handleClickOutside);
+
+    // Cleanup the event listener on unmount
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  // mobile email button
+  const [mobileEmailBtn, setMobileEmailBtn] = useState(false);
+
+  const handleMobileEmailBtn = () => {
+    setMobileEmailBtn((prevMobileEmailBtn) => !prevMobileEmailBtn);
+  };
+
+  const emailRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      // Check if the sidebar is open and the clicked element is not inside the sidebar
+      if (
+        mobileEmailBtn &&
+        !event.target.closest(".panel-body.email-menu") &&
+        !event.target.closest(".mobile-email-btn")
+      ) {
+        setMobileEmailBtn(false);
+      }
+    };
+
+    // Bind the event listener to detect clicks outside the sidebar
+    document.addEventListener("mousedown", handleClickOutside);
+
+    // Cleanup the event listener on unmount
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [mobileEmailBtn]);
+
+  // mobile File Manager button
+  const [mobileFileManagerBtn, setMobileFileManagerBtn] = useState(false);
+
+  const handleMobileFileManagerBtn = () => {
+    setMobileFileManagerBtn(
+      (prevMobileFileManagerBtn) => !prevMobileFileManagerBtn
+    );
+  };
+  const fileManagerRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      // Check if the sidebar is open and the clicked element is not inside the sidebar
+      if (
+        mobileFileManagerBtn &&
+        !event.target.closest(".file-manager-sidebar") &&
+        !event.target.closest(".mobile-file-manager-btn")
+      ) {
+        setMobileFileManagerBtn(false);
+      }
+    };
+
+    // Bind the event listener to detect clicks outside the sidebar
+    document.addEventListener("mousedown", handleClickOutside);
+
+    // Cleanup the event listener on unmount
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [mobileFileManagerBtn]);
+  // small device
+  const [smallDevice, setSmallDevice] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const isSmallDevice = window.innerWidth < 575;
+      setSmallDevice(isSmallDevice);
+    };
+
+    // Initial check on component mount
+    handleResize();
+
+    // Event listener for window resize
+    window.addEventListener("resize", handleResize);
+
+    // Cleanup the event listener on component unmount
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  // Below 1700px
+  const [isBelowLg, setIsBelowLg] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
@@ -1559,14 +1586,14 @@ const [isBelowLg, setIsBelowLg] = useState(false);
       setIsBelowLg(windowWidth < 1700);
     };
 
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
 
     // Initial check on component mount
     handleResize();
 
     // Clean up the event listener on component unmount
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
     };
   }, []);
 
@@ -1584,14 +1611,14 @@ const [isBelowLg, setIsBelowLg] = useState(false);
   useEffect(() => {
     // Dynamically add or remove the RTL CSS file based on the state
     const head = document.head;
-    const existingCssLinks = document.querySelectorAll('link[data-rtl]');
+    const existingCssLinks = document.querySelectorAll("link[data-rtl]");
 
     if (isRtl) {
       // Add the RTL CSS file
-      const cssLink = document.createElement('link');
-      cssLink.rel = 'stylesheet';
-      cssLink.href = 'assets/css/rtl-style.css'; // Adjust the path to the CSS file as needed
-      cssLink.setAttribute('data-rtl', 'true');
+      const cssLink = document.createElement("link");
+      cssLink.rel = "stylesheet";
+      cssLink.href = "assets/css/rtl-style.css"; // Adjust the path to the CSS file as needed
+      cssLink.setAttribute("data-rtl", "true");
       head.appendChild(cssLink);
     } else {
       // Remove any existing RTL CSS files
@@ -1603,29 +1630,27 @@ const [isBelowLg, setIsBelowLg] = useState(false);
 
   // Rechart wrapper height
 
-  const [isRechartHeight, setIsRechartHeight] = useState('');
+  const [isRechartHeight, setIsRechartHeight] = useState("");
 
   const setRechartHeight = () => {
     const screenWidth = window.innerWidth;
 
     if (screenWidth >= 1800) {
-      setIsRechartHeight('407px');
+      setIsRechartHeight("407px");
     } else if (screenWidth >= 1200 && screenWidth < 1800) {
-      setIsRechartHeight('425px');
+      setIsRechartHeight("425px");
     } else if (screenWidth >= 992 && screenWidth < 1200) {
-      setIsRechartHeight('369px');
+      setIsRechartHeight("369px");
     } else if (screenWidth >= 768 && screenWidth < 992) {
-      setIsRechartHeight('365px');
+      setIsRechartHeight("365px");
     } else if (screenWidth >= 576 && screenWidth < 768) {
-      setIsRechartHeight('350px');
-    }
-      else if (screenWidth >= 478 && screenWidth < 576) {
-      setIsRechartHeight('354px');
-    }
-    else if (screenWidth >= 320 && screenWidth < 478) {
-      setIsRechartHeight('250px');
-    } else{
-      setIsRechartHeight('250px')
+      setIsRechartHeight("350px");
+    } else if (screenWidth >= 478 && screenWidth < 576) {
+      setIsRechartHeight("354px");
+    } else if (screenWidth >= 320 && screenWidth < 478) {
+      setIsRechartHeight("250px");
+    } else {
+      setIsRechartHeight("250px");
     }
   };
 
@@ -1637,10 +1662,10 @@ const [isBelowLg, setIsBelowLg] = useState(false);
       setRechartHeight();
     };
 
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
 
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
     };
   }, []);
 
@@ -1665,41 +1690,42 @@ const [isBelowLg, setIsBelowLg] = useState(false);
     };
 
     // Attach the event listener when the component mounts
-    document.addEventListener('click', handleOutsideClick);
+    document.addEventListener("click", handleOutsideClick);
 
     // Clean up the event listener when the component unmounts
     return () => {
-      document.removeEventListener('click', handleOutsideClick);
+      document.removeEventListener("click", handleOutsideClick);
     };
   }, []);
-  const [inputCalculator, setInputCalculator] = useState('');
-  const [lastInputCalculatorIsSymbol, setLastInputCalculatorIsSymbol] = useState(false);
+  const [inputCalculator, setInputCalculator] = useState("");
+  const [lastInputCalculatorIsSymbol, setLastInputCalculatorIsSymbol] =
+    useState(false);
   const [hasCalculated, setHasCalculated] = useState(false);
   useEffect(() => {
     const handleKeydown = (e) => {
       if (
-        e.key === '=' ||
-        e.key === 'Enter' ||
-        e.key === 'Escape' ||
-        (e.key >= '0' && e.key <= '9') ||
-        ['+', '-', '*', '/'].includes(e.key)
+        e.key === "=" ||
+        e.key === "Enter" ||
+        e.key === "Escape" ||
+        (e.key >= "0" && e.key <= "9") ||
+        ["+", "-", "*", "/"].includes(e.key)
       ) {
         e.preventDefault();
 
-        if (e.key === '=' || e.key === 'Enter') {
+        if (e.key === "=" || e.key === "Enter") {
           handleEqual();
-        } else if (e.key === 'Escape') {
-          setInputCalculator('');
+        } else if (e.key === "Escape") {
+          setInputCalculator("");
         } else {
           handleInputCalculator(e.key);
         }
       }
     };
 
-    document.addEventListener('keydown', handleKeydown);
+    document.addEventListener("keydown", handleKeydown);
 
     return () => {
-      document.removeEventListener('keydown', handleKeydown);
+      document.removeEventListener("keydown", handleKeydown);
     };
   }, [inputCalculator]);
 
@@ -1710,16 +1736,16 @@ const [isBelowLg, setIsBelowLg] = useState(false);
 
     if (hasCalculated) {
       // Reset the input and clear the calculated flag
-      setInputCalculator('');
+      setInputCalculator("");
       setHasCalculated(false);
     }
 
-    if (num === '=') {
+    if (num === "=") {
       handleEqual();
       setHasCalculated(true);
-    } else if (num === 'C') {
-      setInputCalculator('');
-    } else if (num === 'CE') {
+    } else if (num === "C") {
+      setInputCalculator("");
+    } else if (num === "CE") {
       setInputCalculator(inputCalculator.slice(0, -1));
     } else {
       setInputCalculator(inputCalculator + num);
@@ -1727,7 +1753,7 @@ const [isBelowLg, setIsBelowLg] = useState(false);
 
     setLastInputCalculatorIsSymbol(isSymbol(num));
   };
-    
+
   const handleEqual = () => {
     let value = inputCalculator;
     if (isSymbol(value[value.length - 1])) {
@@ -1737,66 +1763,68 @@ const [isBelowLg, setIsBelowLg] = useState(false);
       const sum = eval(value);
       setInputCalculator(sum.toString());
     } catch (error) {
-      setInputCalculator('Error');
+      setInputCalculator("Error");
     }
   };
 
   const isSymbol = (inputCalculator) => {
-    const symbols = ['+', '-', '*', '/'];
+    const symbols = ["+", "-", "*", "/"];
     return symbols.includes(inputCalculator);
   };
 
-    // Event handler for calculator buttons
-const handleCalculatorButtonClick = (e) => {
-  const buttonValue = e.target.textContent;
+  // Event handler for calculator buttons
+  const handleCalculatorButtonClick = (e) => {
+    const buttonValue = e.target.textContent;
 
-  // Handle numeric buttons, operators, and special buttons
-  if (buttonValue === '=') {
-    handleEqual();
-  } else if (buttonValue === 'C') {
-    setInputCalculator('');
-  } else if (buttonValue === 'CE') {
-    setInputCalculator(inputCalculator.slice(0, -1));
-  } else {
-    handleInputCalculator(buttonValue);
-  }
+    // Handle numeric buttons, operators, and special buttons
+    if (buttonValue === "=") {
+      handleEqual();
+    } else if (buttonValue === "C") {
+      setInputCalculator("");
+    } else if (buttonValue === "CE") {
+      setInputCalculator(inputCalculator.slice(0, -1));
+    } else {
+      handleInputCalculator(buttonValue);
+    }
 
-  // Update lastInputCalculatorIsSymbol flag
-  setLastInputCalculatorIsSymbol(isSymbol(buttonValue));
-};
-  
-// Profile rightSidebar
-const [isProfileSidebarOpen, setIsProfileSidebarOpen] = useState({
-  dropdown:false,
-  sidebar:false,
-});
+    // Update lastInputCalculatorIsSymbol flag
+    setLastInputCalculatorIsSymbol(isSymbol(buttonValue));
+  };
 
-const handleProfileSidebarCheckboxChange = () => {
-  setIsProfileSidebarOpen((prevState) => ({
-    ...prevState,
-    sidebar: !prevState.sidebar,
-    dropdown:false
-  }));
-  setChatDropdownOpen(false);
-  setNotificationDropdownOpen(false)
-};
+  // Profile rightSidebar
+  const [isProfileSidebarOpen, setIsProfileSidebarOpen] = useState({
+    dropdown: false,
+    sidebar: false,
+  });
 
-const handleProfileDropdownCheckboxChange = () => {
-  setIsProfileSidebarOpen((prevState) => ({
-    ...prevState,
-    dropdown: !prevState.dropdown,
-    sidebar: false
-  }));
-};
-const handleProfileSidebarClose = () => {
-  setIsProfileSidebarOpen((prevState) => ({
-    ...prevState,
-    dropdown:false,
-    sidebar:false
-  }))
-}
+  const handleProfileSidebarCheckboxChange = () => {
+    setIsProfileSidebarOpen((prevState) => ({
+      ...prevState,
+      sidebar: !prevState.sidebar,
+      dropdown: false,
+    }));
+    setChatDropdownOpen(false);
+    setNotificationDropdownOpen(false);
+  };
+
+  const handleProfileDropdownCheckboxChange = () => {
+    setIsProfileSidebarOpen((prevState) => ({
+      ...prevState,
+      dropdown: !prevState.dropdown,
+      sidebar: false,
+    }));
+  };
+  const handleProfileSidebarClose = () => {
+    setIsProfileSidebarOpen((prevState) => ({
+      ...prevState,
+      dropdown: false,
+      sidebar: false,
+    }));
+  };
   // Countdown Timer
-  const countdownDate = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).getTime();
+  const countdownDate = new Date(
+    Date.now() + 365 * 24 * 60 * 60 * 1000
+  ).getTime();
   const [isTimerState, setIsTimerState] = useState({
     days: 0,
     hours: 0,
@@ -1816,10 +1844,10 @@ const handleProfileSidebarClose = () => {
 
       let days = Math.floor(distanceToDate / (1000 * 60 * 60 * 24));
       let hours = Math.floor(
-        (distanceToDate % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
+        (distanceToDate % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
       );
       let minutes = Math.floor(
-        (distanceToDate % (1000 * 60 * 60)) / (1000 * 60),
+        (distanceToDate % (1000 * 60 * 60)) / (1000 * 60)
       );
       let seconds = Math.floor((distanceToDate % (1000 * 60)) / 1000);
 
@@ -1838,193 +1866,194 @@ const handleProfileSidebarClose = () => {
     }
   };
   return (
-    <DigiContext.Provider value={{
-      isExpanded,
-      toggleNav,
-      isChatDropdownOpen,
-      toggleChatDropdown,
-      isNotificationDropdownOpen,
-      toggleNotificationDropdown,
-      isFullscreen,
-      handleFullscreen,
-      isLightTheme,
-      handleLightThemeToggle,
-      isDarkTheme,
-      handleDarkThemeToggle,
-      handleResetTheme,
-      isSettingsOpen,
-      handleSettingsToggle,
-      containerRef,
-      show,
-      handleClose,
-      handleShow,
-      headerBtnOpen,
-      handleHeaderBtn,
-      handleHeaderReset,
-      currentPage,
-      dataPerPage,
-      dataList,
-      handleCheckboxChange,
-      currentData,
-      paginate,
-      totalPages,
-      pageNumbers,
-      scrollbarPosition,
-      updateScrollbarPosition,
-      showAddNewTaskModal,
-      handleCloseAddNewTaskModal,
-      handleShowAddNewTaskModal,
-      viewTaskModalOpen,
-      handleViewTaskModalShow,
-      handleViewTaskModalClose,
-      state,
-      toggleMainDropdown,
-      toggleCrmDropdown,
-      toggleHrmDropdown,
-      toggleEcommerceDropdown,
-      handleNavLinkClick,
-      tableFilterBtnOpen,
-      handleTableFilterBtn,
-      handleTableFilterReset,
-      searchInChat,
-      handleSearchInChat,
-      passwordVisible,
-      togglePasswordVisibility,
-      uploadModalOpen,
-      handleUploadModalClose,
-      handleUploadModalShow,
-      newFolderModal,
-      handleNewFolderModalClose,
-      handleNewFolderModalOpen,
-      fileDeatailsModalOpen,
-      handleFileDetailsModalClose,
-      handleFileDetailsModalShow,
-      handleLayoutPosition,
-      layoutPosition,
-      title,
-      handleTitleChange,
-      permalink,
-      handleEditPermalink,
-      handleUpdatePermalink,
-      handleCancelPermalink,
-      currentEmailData,
-      currentEmailPage,
-      paginateEmail,
-      emailPageNumbers,
-      totalEmailPages,
-      mailDetailsOpen,
-      handleMailDetailsBtn,
-      handleMailDetailClose,
-      showMailModal,
-      handleMailClose,
-      handleMailShow,
-      showComposeMail,
-      handleComposeMailClose,
-      handleComposeMailShow,
-      handleBackgroundChange,
-      resetBackground,
-      backgroundImageStyle,
-      handleSidebarBackgroundChange,
-      resetSidebarBackground,
-      sidebarBackgroundImageStyle,
-      isNavExpanded,
-      toggleNavExpanded,
-      resetNavSize,
-      setIsNavExpanded,
-      themeSelection,
-      handleThemeSelection,
-      componentState,
-      toggleComponentMainDropdown,
-      toggleAdvance,
-      toggleMultipleLevel,
-      toggleFirstLevel,
-      toggleSecondLevel,
-      toggleSubComponentDropdown,
-      pagesState,
-      toggleMainPagesDropdown,
-      toggleSubPagesDropdown,
-      toggleAuthentication,
-      toggleUser,
-      dropdownOpen,
-      handleDropdownClick,
-      dashState,
-      toggleMainDashDropdown,
-      rightSideDropdown,
-      handleRightSideDropdownToggle,
-      primaryColor,
-      handleColorSelectionToggle,
-      INITIAL_EVENTS,
-      handleDateSelect,
-      renderEventContent,
-      handleEventClick,
-      handleEvents,
-      currentEvents,
-      addNewEventModal,
-      handleAddNewModalHide,
-      handleSaveEvent,
-      calendarRef,
-      selectedEvent,
-      handleDeleteEvent,
-      deleteConfirmationModal,
-      handleCloseDeleteConfirmationModal,
-      handleDelete,
-      isSmallScreen,
-      toggleSidebar,
-      isSidebarOpen,
-      setSidebarOpen,
-      showVoiceCall,
-      handleCloseVoiceCall,
-      handleShowVoiceCall,
-      showVideoCall,
-      handleCloseVideoCall,
-      handleShowVideoCall,
-      ref,
-      mobileHeaderBtn,
-      handleMobileHeaderBtn,
-      inputValue,
-      handleInputChange,
-      handleDateRangeSelection,
-      showDatePicker,
-      setShowDatePicker,
-      selectedDateRange,
-      handleDateRangeChange,
-      mobileEmailBtn,
-      handleMobileEmailBtn,
-      mobileFileManagerBtn,
-      handleMobileFileManagerBtn,
-      smallDevice,
-      isBelowLg,
-      isRtl,
-      handleRtlBtn,
-      handleLtrBtn,
-      headerRef,
-      tableFilterRef,
-      dateRangeSelectionRef,
-      emailRef,
-      fileManagerRef,
-      mainAppsDropdownRef,
-      mainComponentRef,
-      mainPagesRef,
-      isRechartHeight,
-      mainDashboardRef,
-      handleNavHover,
-      handleNavHoverEnd,
-      handleCalculator,
-      calculatorShow,
-      inputCalculator,
-      calculatorRef,
-      handleCalculatorButtonClick,
-      isProfileSidebarOpen,
-      handleProfileSidebarClose,
-      handleProfileSidebarCheckboxChange,
-      handleProfileDropdownCheckboxChange,
-      toggleError,
-      toggleAdditional,
-      isTimerState
-    }}>
-        {children}
+    <DigiContext.Provider
+      value={{
+        isExpanded,
+        toggleNav,
+        isChatDropdownOpen,
+        toggleChatDropdown,
+        isNotificationDropdownOpen,
+        toggleNotificationDropdown,
+        isFullscreen,
+        handleFullscreen,
+        isLightTheme,
+        handleLightThemeToggle,
+        isDarkTheme,
+        handleDarkThemeToggle,
+        handleResetTheme,
+        isSettingsOpen,
+        handleSettingsToggle,
+        containerRef,
+        show,
+        handleClose,
+        handleShow,
+        headerBtnOpen,
+        handleHeaderBtn,
+        handleHeaderReset,
+        currentPage,
+        dataPerPage,
+        dataList,
+        handleCheckboxChange,
+        currentData,
+        paginate,
+        totalPages,
+        pageNumbers,
+        scrollbarPosition,
+        updateScrollbarPosition,
+        showAddNewTaskModal,
+        handleCloseAddNewTaskModal,
+        handleShowAddNewTaskModal,
+        viewTaskModalOpen,
+        handleViewTaskModalShow,
+        handleViewTaskModalClose,
+        state,
+        toggleMainDropdown,
+        toggleCrmDropdown,
+        toggleHrmDropdown,
+        toggleEcommerceDropdown,
+        handleNavLinkClick,
+        tableFilterBtnOpen,
+        handleTableFilterBtn,
+        handleTableFilterReset,
+        searchInChat,
+        handleSearchInChat,
+        passwordVisible,
+        togglePasswordVisibility,
+        uploadModalOpen,
+        handleUploadModalClose,
+        handleUploadModalShow,
+        newFolderModal,
+        handleNewFolderModalClose,
+        handleNewFolderModalOpen,
+        fileDeatailsModalOpen,
+        handleFileDetailsModalClose,
+        handleFileDetailsModalShow,
+        handleLayoutPosition,
+        layoutPosition,
+        title,
+        handleTitleChange,
+        permalink,
+        handleEditPermalink,
+        handleUpdatePermalink,
+        handleCancelPermalink,
+        currentEmailData,
+        currentEmailPage,
+        paginateEmail,
+        emailPageNumbers,
+        totalEmailPages,
+        mailDetailsOpen,
+        handleMailDetailsBtn,
+        handleMailDetailClose,
+        showMailModal,
+        handleMailClose,
+        handleMailShow,
+        showComposeMail,
+        handleComposeMailClose,
+        handleComposeMailShow,
+        handleBackgroundChange,
+        resetBackground,
+        backgroundImageStyle,
+        handleSidebarBackgroundChange,
+        resetSidebarBackground,
+        sidebarBackgroundImageStyle,
+        isNavExpanded,
+        toggleNavExpanded,
+        resetNavSize,
+        setIsNavExpanded,
+        themeSelection,
+        handleThemeSelection,
+        componentState,
+        toggleComponentMainDropdown,
+        toggleAdvance,
+        toggleMultipleLevel,
+        toggleFirstLevel,
+        toggleSecondLevel,
+        toggleSubComponentDropdown,
+        pagesState,
+        toggleMainPagesDropdown,
+        toggleSubPagesDropdown,
+        toggleAuthentication,
+        toggleUser,
+        dropdownOpen,
+        handleDropdownClick,
+        dashState,
+        toggleMainDashDropdown,
+        rightSideDropdown,
+        handleRightSideDropdownToggle,
+        primaryColor,
+        handleColorSelectionToggle,
+        INITIAL_EVENTS,
+        handleDateSelect,
+        renderEventContent,
+        handleEventClick,
+        handleEvents,
+        currentEvents,
+        addNewEventModal,
+        handleAddNewModalHide,
+        handleSaveEvent,
+        calendarRef,
+        selectedEvent,
+        handleDeleteEvent,
+        deleteConfirmationModal,
+        handleCloseDeleteConfirmationModal,
+        handleDelete,
+        isSmallScreen,
+        toggleSidebar,
+        isSidebarOpen,
+        setSidebarOpen,
+        showVoiceCall,
+        handleCloseVoiceCall,
+        handleShowVoiceCall,
+        showVideoCall,
+        handleCloseVideoCall,
+        handleShowVideoCall,
+        ref,
+        mobileHeaderBtn,
+        handleMobileHeaderBtn,
+        inputValue,
+        handleInputChange,
+        handleDateRangeSelection,
+        showDatePicker,
+        setShowDatePicker,
+        selectedDateRange,
+        handleDateRangeChange,
+        mobileEmailBtn,
+        handleMobileEmailBtn,
+        mobileFileManagerBtn,
+        handleMobileFileManagerBtn,
+        smallDevice,
+        isBelowLg,
+        isRtl,
+        handleRtlBtn,
+        handleLtrBtn,
+        headerRef,
+        tableFilterRef,
+        dateRangeSelectionRef,
+        emailRef,
+        fileManagerRef,
+        mainAppsDropdownRef,
+        mainComponentRef,
+        mainPagesRef,
+        isRechartHeight,
+        mainDashboardRef,
+        handleNavHover,
+        handleNavHoverEnd,
+        handleCalculator,
+        calculatorShow,
+        inputCalculator,
+        calculatorRef,
+        handleCalculatorButtonClick,
+        isProfileSidebarOpen,
+        handleProfileSidebarClose,
+        handleProfileSidebarCheckboxChange,
+        handleProfileDropdownCheckboxChange,
+        toggleError,
+        toggleAdditional,
+        isTimerState,
+      }}>
+      {children}
     </DigiContext.Provider>
-  )
-}
+  );
+};
 
-export {DigiContext, DigiContextProvider}
+export { DigiContext, DigiContextProvider };

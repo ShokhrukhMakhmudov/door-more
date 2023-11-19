@@ -62,21 +62,46 @@ const UsersPart = () => {
             : ""
         }`}>
         <li className="sidebar-dropdown-item">
-          <NavLink to="/callcenter" className="sidebar-link">
+          <Link
+            role="button"
+            className={`sidebar-link has-sub ${authentication ? "show" : ""}`}
+            onClick={toggleAuthentication}>
             <span className="nav-icon">
               <i className="fa-duotone fa-phone"></i>
             </span>{" "}
             <span className="sidebar-txt">Call Center</span>
-          </NavLink>
-          <NavLink to="/utility" className="sidebar-link">
+          </Link>
+          <ul
+            className={`sidebar-dropdown-menu ${
+              authentication ? "d-block" : ""
+            }`}>
+            <li className="sidebar-dropdown-item">
+              <NavLink to="/" className="sidebar-link">
+                Вызовы
+              </NavLink>
+            </li>
+            <li className="sidebar-dropdown-item">
+              <NavLink to="/" className="sidebar-link">
+                Мои задачи
+              </NavLink>
+            </li>
+            <li className="sidebar-dropdown-item">
+              <NavLink to="/callcenter" className="sidebar-link">
+                Заказы
+              </NavLink>
+            </li>
+          </ul>
+        </li>
+        <li className="sidebar-dropdown-item">
+          <NavLink to="/manager" className="sidebar-link">
             <span className="nav-icon">
-              <i class="fa-solid fa-user-tie"></i>
+              <i className="fa-solid fa-user-tie"></i>
             </span>{" "}
             <span className="sidebar-txt">Sales Manager</span>
           </NavLink>
-          <NavLink to="/utility" className="sidebar-link">
+          <NavLink to="/measure" className="sidebar-link">
             <span className="nav-icon">
-              <i class="fa-solid fa-pen-ruler"></i>
+              <i className="fa-solid fa-pen-ruler"></i>
             </span>{" "}
             <span className="sidebar-txt">Measure</span>
           </NavLink>

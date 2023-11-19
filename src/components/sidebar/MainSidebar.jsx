@@ -19,6 +19,8 @@ const MainSidebar = () => {
     handleNavHover,
     handleNavHoverEnd,
     isSmallScreen,
+    toggleSidebar,
+    toggleNav,
   } = useContext(DigiContext);
 
   const shouldUseOverlayScrollbars =
@@ -61,24 +63,16 @@ const MainSidebar = () => {
       `}
       style={sidebarBackgroundImageStyle}
       ref={ref}
-      onMouseEnter={isNavExpanded.hover ? handleNavHover : undefined}
-      onMouseLeave={isNavExpanded.hover ? handleNavHoverEnd : undefined}>
+      onMouseEnter={isNavExpanded.hover ? handleNavHover : toggleNav}
+      onMouseLeave={isNavExpanded.hover ? handleNavHoverEnd : null}>
       <div className="main-menu">
         {shouldUseOverlayScrollbars ? (
           <OverlayScrollbarsComponent className="sidebar-menu">
             <DashboardPart />
             <AppsPart />
             <UsersPart />
-
+            <PagesPart />
             <ComponentsPart />
-            {/*  <PagesPart />
-            <li className="help-center">
-              <h3>Help Center</h3>
-              <p>We're an award-winning, forward thinking</p>
-              <Link to="#" className="btn btn-sm btn-light">
-                Go to Help Center
-              </Link>
-            </li> */}
           </OverlayScrollbarsComponent>
         ) : (
           <>
