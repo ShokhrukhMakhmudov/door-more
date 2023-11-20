@@ -75,7 +75,7 @@ const UsersPart = () => {
             className={`sidebar-dropdown-menu ${
               authentication ? "d-block" : ""
             }`}>
-            <li className="sidebar-dropdown-item">
+            {/* <li className="sidebar-dropdown-item">
               <NavLink to="/" className="sidebar-link">
                 Вызовы
               </NavLink>
@@ -84,7 +84,7 @@ const UsersPart = () => {
               <NavLink to="/" className="sidebar-link">
                 Мои задачи
               </NavLink>
-            </li>
+            </li> */}
             <li className="sidebar-dropdown-item">
               <NavLink to="/callcenter" className="sidebar-link">
                 Заказы

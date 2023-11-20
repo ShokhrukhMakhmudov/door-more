@@ -1,19 +1,19 @@
 import React, { useContext, useEffect, useState } from "react";
-import DatePicker from "react-datepicker";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
 import { DigiContext } from "../../context/DigiContext";
-import CkEditor from "../ck-editor/CkEditor";
-import axios from "axios";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { supabase } from "../../supabase";
-const AddNewTaskModal = () => {
+const AddNewTaskModal = ({ setRefresh }) => {
+  const MySwal = withReactContent(Swal);
   const { showAddNewTaskModal, handleCloseAddNewTaskModal } =
     useContext(DigiContext);
-  const [joiningDate, setJoiningDate] = useState(null);
-  const [leaveDate, setLeaveDate] = useState(null);
   const [task, setTask] = useState({
+    operator_name: "Оператор-1",
+    name: "",
     phone: "",
     address: "",
     description: "",
@@ -31,11 +31,15 @@ const AddNewTaskModal = () => {
   }, []);
 
   const createTask = async () => {
-    console.log(task);
+    let time = new Date();
+
+    const newDate = {
+      call_center: { ...task, date: time.toLocaleString() },
+    };
 
     const { data, error } = await supabase
       .from("orders")
-      .insert([task])
+      .insert([newDate])
       .select();
 
     console.log(data);
@@ -44,8 +48,15 @@ const AddNewTaskModal = () => {
   const useCreateTask = () => {
     return useMutation({
       mutationFn: createTask,
-      onSuccess: (data) => {
-        console.log(data);
+      onSuccess: () => {
+        MySwal.fire({
+          icon: "success",
+          title: "Заказ успешно добавлен",
+          showConfirmButton: false,
+          timer: 1500,
+        }).then(() => {
+          setRefresh((prev) => !prev);
+        });
       },
     });
   };
@@ -63,7 +74,7 @@ const AddNewTaskModal = () => {
       onHide={handleCloseAddNewTaskModal}
       size="lg">
       <Modal.Header>
-        <Modal.Title id="addTaskModalLabel">Добавить новый заказ</Modal.Title>
+        <Modal.Title id="addTaskModalLabel">Оператор: Оператор-1</Modal.Title>
         <Button
           variant="outline-primary"
           size="sm"
@@ -75,10 +86,24 @@ const AddNewTaskModal = () => {
       </Modal.Header>
       <Modal.Body>
         <Form>
-          <Form.Group className="mb-3" controlId="addPhone">
+          <Form.Group className="mb-3" controlId="addName">
+            <Form.Label>Имя</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Имя заказчика"
+              value={task?.name}
+              onChange={(e) => {
+                setTask((prev) => {
+                  return { ...prev, name: e.target.value };
+                });
+              }}
+            />
+          </Form.Group>
+          <Form.Group className="mb-3">
             <Form.Label>Телефон</Form.Label>
             <Form.Control
-              type="tel"
+              required
+              type="text"
               placeholder="Номер телефона"
               value={task?.phone}
               onChange={(e) => {
@@ -120,13 +145,13 @@ const AddNewTaskModal = () => {
                 <Form.Select
                   onChange={(e) => {
                     setTask((prev) => {
-                      return { ...prev, branch: +e.target.value };
+                      return { ...prev, branch: e.target.value };
                     });
                   }}>
                   <option>Выбрать</option>
                   {data.map(({ id, name }) => {
                     return (
-                      <option key={id} value={id}>
+                      <option key={id} value={name}>
                         {name}
                       </option>
                     );
@@ -139,16 +164,16 @@ const AddNewTaskModal = () => {
                   disabled={!task?.branch}
                   onChange={(e) => {
                     setTask((prev) => {
-                      return { ...prev, sales_manager: +e.target.value };
+                      return { ...prev, sales_manager: e.target.value };
                     });
                   }}>
                   <option>Выбрать</option>
                   {data
-                    .filter(({ id }) => id === task?.branch)
+                    .filter(({ name }) => name == task?.branch)
                     .map(({ sales_managers }) => {
                       return sales_managers.map(({ id, name }) => {
                         return (
-                          <option key={id} value={id}>
+                          <option key={id} value={name}>
                             {name}
                           </option>
                         );
@@ -243,10 +268,10 @@ const AddNewTaskModal = () => {
           size="sm"
           data-bs-dismiss="modal"
           onClick={handleCloseAddNewTaskModal}>
-          Close
+          Закрыть
         </Button>
         <Button variant="primary" size="sm" onClick={handleSubmit}>
-          Save Task
+          Добавить
         </Button>
       </Modal.Footer>
     </Modal>

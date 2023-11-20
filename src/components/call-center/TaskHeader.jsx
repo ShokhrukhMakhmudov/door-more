@@ -2,7 +2,7 @@ import React, { useContext, useState } from "react";
 import { DigiContext } from "../../context/DigiContext";
 import { Form } from "react-bootstrap";
 
-const TaskHeader = () => {
+const TaskHeader = ({ setRefresh }) => {
   const {
     handleShowAddNewTaskModal,
     headerBtnOpen,
@@ -37,7 +37,9 @@ const TaskHeader = () => {
         </div>
         <button
           className="btn btn-sm btn-icon btn-outline-primary"
-          onClick={handleHeaderReset}>
+          onClick={() => {
+            setRefresh((prev) => !prev);
+          }}>
           <i className="fa-light fa-arrows-rotate"></i>
         </button>
         {/* <div className="digi-dropdown dropdown" ref={headerRef}>

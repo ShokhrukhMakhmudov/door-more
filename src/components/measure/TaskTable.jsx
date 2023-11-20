@@ -7,44 +7,17 @@ import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
 import { Link } from "react-router-dom";
 import { supabase } from "../../supabase";
 
-const TaskTable = ({ dataList, setOrder }) => {
+const TaskTable = ({ dataList, setOrder, setOrderView }) => {
   const { handleShow, handleViewTaskModalShow, handleShowAddNewTaskModal } =
     useContext(DigiContext);
   const [currentPage, setCurrentPage] = useState(1);
   const [dataPerPage] = useState(10);
 
-  // Pagination logic
-  // const indexOfLastData = currentPage * dataPerPage;
-  // const indexOfFirstData = indexOfLastData - dataPerPage;
-  // const currentData = dataList
-  //   ? dataList.slice(indexOfFirstData, indexOfLastData)
-  //   : null;
-
-  // const paginate = (pageNumber) => {
-  //   setCurrentPage(pageNumber);
-  // };
-
-  // // Calculate total number of pages
-  // const totalPages = Math.ceil(dataList.length / dataPerPage);
-  // const pageNumbers = [];
-  // for (let i = 1; i <= totalPages; i++) {
-  //   pageNumbers.push(i);
-  // }
-
-  // const handleStatusChange = (index, value) => {
-  //   const dataIndex = indexOfFirstData + index;
-  //   const updatedData = [...dataList];
-  //   updatedData[dataIndex].status = value;
-  //   setDataList(updatedData);
-  // };
-
-  // const handlePriorityChange = (index, value) => {
-  //   const dataIndex = indexOfFirstData + index;
-  //   const updatedData = [...dataList];
-  //   updatedData[dataIndex].priority = value;
-  //   setDataList(updatedData);
-  // };
-
+  const DownloadFile = async (filename) => {
+    const { data, error } = await supabase.storage
+      .from("measure_files")
+      .download(`${filename}.xlsx`);
+  };
   return (
     <>
       <OverlayScrollbarsComponent>
@@ -53,20 +26,11 @@ const TaskTable = ({ dataList, setOrder }) => {
           id="taskTable">
           <thead>
             <tr>
-              <th className="no-sort">
-                <div className="form-check">
-                  <input
-                    className="form-check-input"
-                    type="checkbox"
-                    id="markAllLeads"
-                  />
-                </div>
-              </th>
+              <th className="no-sort">ID</th>
 
+              <th>Имя</th>
               <th>Номер телефонов</th>
-
               <th>Дата создания</th>
-              <th>Менеджер</th>
               <th>Замеры</th>
               <th>Действия</th>
             </tr>
@@ -76,42 +40,40 @@ const TaskTable = ({ dataList, setOrder }) => {
               dataList.map(
                 ({
                   id,
-                  phone,
-                  description,
-                  created_at,
-                  address,
-                  branch,
-                  sales_manager,
+                  call_center: { phone, date, name },
                   measure,
-                  excel_file,
+                  sales_manager,
                 }) => (
-                  <tr key={id}>
-                    <td>
-                      <div className="form-check">
-                        <input className="form-check-input" type="checkbox" />
-                      </div>
-                    </td>
+                  <tr
+                    style={{ cursor: "pointer" }}
+                    key={id}
+                    onClick={() => {
+                      setOrderView(id);
+                      handleViewTaskModalShow();
+                    }}>
+                    <td>{id}</td>
+                    <td>{name}</td>
 
                     <td>{phone}</td>
 
-                    <td>
-                      <div className="avatar-box">
-                        {created_at.slice(0, 10)}
-                        {"/"}
-                        {created_at.slice(11, 16)}
-                      </div>
-                    </td>
-                    <td>Сарвар</td>
-                    <td>{excel_file ? "Отправлены" : "Не отправлены"}</td>
+                    <td>{date}</td>
+                    <th>{measure ? "Отправлены" : "Не отправлено"}</th>
                     <td>
                       <div className="btn-box">
                         <button
-                          className="btn btn-sm btn-icon btn-primary"
-                          onClick={() => {
+                          className={`btn ${
+                            measure ? "btn-secondary" : "btn-primary"
+                          }`}
+                          onClick={(e) => {
+                            e.stopPropagation();
                             setOrder(id);
                             handleShowAddNewTaskModal();
                           }}>
-                          <i className="fa-light fa-plus"></i>
+                          {/* <i
+                            className={`fa-light ${
+                              sales_manager ? "fa-edit" : "fa-plus"
+                            } `}></i> */}
+                          {measure ? "Изменить" : "Добавить"}
                         </button>
                       </div>
                     </td>

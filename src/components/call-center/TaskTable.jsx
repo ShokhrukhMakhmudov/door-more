@@ -7,53 +7,8 @@ import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
 import { Link } from "react-router-dom";
 import { supabase } from "../../supabase";
 
-const TaskTable = () => {
+const TaskTable = ({ dataList, setOrder }) => {
   const { handleShow, handleViewTaskModalShow } = useContext(DigiContext);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [dataPerPage] = useState(10);
-  const [dataList, setDataList] = useState(null);
-
-  const handleDelete = (id) => {
-    setDataList((prevData) => prevData.filter((data) => data.id !== id));
-  };
-  useEffect(() => {
-    async function fetchData() {
-      let { data: orders, error } = await supabase.from("orders").select("*");
-      setDataList(orders);
-    }
-    fetchData();
-  }, []);
-  // Pagination logic
-  // const indexOfLastData = currentPage * dataPerPage;
-  // const indexOfFirstData = indexOfLastData - dataPerPage;
-  // const currentData = dataList
-  //   ? dataList.slice(indexOfFirstData, indexOfLastData)
-  //   : null;
-
-  // const paginate = (pageNumber) => {
-  //   setCurrentPage(pageNumber);
-  // };
-
-  // // Calculate total number of pages
-  // const totalPages = Math.ceil(dataList.length / dataPerPage);
-  // const pageNumbers = [];
-  // for (let i = 1; i <= totalPages; i++) {
-  //   pageNumbers.push(i);
-  // }
-
-  // const handleStatusChange = (index, value) => {
-  //   const dataIndex = indexOfFirstData + index;
-  //   const updatedData = [...dataList];
-  //   updatedData[dataIndex].status = value;
-  //   setDataList(updatedData);
-  // };
-
-  // const handlePriorityChange = (index, value) => {
-  //   const dataIndex = indexOfFirstData + index;
-  //   const updatedData = [...dataList];
-  //   updatedData[dataIndex].priority = value;
-  //   setDataList(updatedData);
-  // };
 
   return (
     <>
@@ -63,21 +18,13 @@ const TaskTable = () => {
           id="taskTable">
           <thead>
             <tr>
-              <th className="no-sort">
-                <div className="form-check">
-                  <input
-                    className="form-check-input"
-                    type="checkbox"
-                    id="markAllLeads"
-                  />
-                </div>
-              </th>
+              <th className="no-sort">ID</th>
               <th>Филиалы</th>
               <th>Номер телефонов</th>
-              <th>Адреса</th>
+              <th>Имя</th>
               <th>Дата создания</th>
-              <th>Менеджер по продажам</th>
-              <th>Действия</th>
+              <th>Менеджер</th>
+              <th>Статус</th>
             </tr>
           </thead>
           <tbody>
@@ -85,52 +32,40 @@ const TaskTable = () => {
               dataList.map(
                 ({
                   id,
-                  phone,
-                  description,
-                  created_at,
-                  address,
-                  branch,
-                  sales_manager,
+                  call_center: {
+                    name,
+                    phone,
+                    description,
+                    date,
+                    address,
+                    branch,
+                    sales_manager,
+                  },
+                  sales_manager: manager,
                 }) => (
-                  <tr key={id}>
-                    <td>
-                      <div className="form-check">
-                        <input className="form-check-input" type="checkbox" />
-                      </div>
-                    </td>
-                    <td>
-                      <Link
-                        role="button"
-                        className="text-decoration-underline"
-                        data-bs-toggle="modal"
-                        data-bs-target="#viewTaskModal"
-                        onClick={handleViewTaskModalShow}>
-                        Филиал-1
-                      </Link>
-                    </td>
+                  <tr
+                    style={{ cursor: "pointer" }}
+                    key={id}
+                    onClick={() => {
+                      setOrder(id);
+                      handleViewTaskModalShow();
+                    }}>
+                    <td>{id}</td>
+                    <td>{branch}</td>
 
                     <td>{phone}</td>
-                    <td>{address}</td>
+                    <td>{name}</td>
                     <td>
                       <div className="avatar-box">
-                        {created_at.slice(0, 10)}
+                        {date.slice(0, 10)}
                         {"/"}
-                        {created_at.slice(11, 16)}
+                        {date.slice(12, 17)}
                       </div>
                     </td>
                     <td>
                       <div className="avatar-box">Сарвар</div>
                     </td>
-
-                    <td>
-                      <div className="btn-box">
-                        <button
-                          className="btn btn-sm btn-icon btn-danger"
-                          onClick={handleDelete}>
-                          <i className="fa-light fa-trash-can"></i>
-                        </button>
-                      </div>
-                    </td>
+                    <td>{manager ? "В ожидании" : "В рассмотрении"}</td>
                   </tr>
                 )
               )}

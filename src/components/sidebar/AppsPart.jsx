@@ -81,22 +81,6 @@ const AppsPart = () => {
             id="crmDropdown">
             <li className="sidebar-dropdown-item">
               <NavLink
-                to="/audience"
-                className="sidebar-link"
-                onClick={handleSubNavLinkClick}>
-                Target Audience
-              </NavLink>
-            </li>
-            <li className="sidebar-dropdown-item">
-              <NavLink
-                to="/company"
-                className="sidebar-link"
-                onClick={handleSubNavLinkClick}>
-                Company
-              </NavLink>
-            </li>
-            <li className="sidebar-dropdown-item">
-              <NavLink
                 to="/task"
                 className="sidebar-link"
                 onClick={handleSubNavLinkClick}>
