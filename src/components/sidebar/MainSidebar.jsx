@@ -7,6 +7,9 @@ import AppsPart from "./AppsPart";
 import PagesPart from "./PagesPart";
 import ComponentsPart from "./ComponentsPart";
 import UsersPart from "./UsersPart";
+import ManagerPart from "./ManagerPart";
+import MeasurePart from "./MeasurePart";
+import CallCenterPart from "./CallCenterPart";
 
 const MainSidebar = () => {
   const {
@@ -29,7 +32,8 @@ const MainSidebar = () => {
     layoutPosition.horizontal ||
     (!layoutPosition.twoColumn && isExpanded) ||
     !layoutPosition.flush;
-
+  const userRole = JSON.parse(sessionStorage.getItem("user"));
+  console.log(userRole);
   return (
     <div
       className={`main-sidebar 
@@ -68,11 +72,10 @@ const MainSidebar = () => {
       <div className="main-menu">
         {shouldUseOverlayScrollbars ? (
           <OverlayScrollbarsComponent className="sidebar-menu">
-            <DashboardPart />
-            <AppsPart />
-            <UsersPart />
-            <PagesPart />
-            <ComponentsPart />
+            {userRole.role == "admin" && <AppsPart />}
+            {userRole.role == "manager" && <ManagerPart />}
+            {userRole.role == "measurer" && <MeasurePart />}
+            {userRole.role == "call_center" && <CallCenterPart />}
           </OverlayScrollbarsComponent>
         ) : (
           <>

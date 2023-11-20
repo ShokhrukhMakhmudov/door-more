@@ -62,8 +62,9 @@ function App() {
   return (
     <Router>
       <Routes>
+        <Route index element={<Login />} />
         <Route element={<Layout />}>
-          <Route path="/" element={<Dashboard />} />
+          <Route path="/home" element={<Dashboard />} />
           <Route path="/fileManager" element={<FileManager />} />
           <Route path="/crmDashboard" element={<CrmDashboard />} />
           <Route path="/hrmDashboard" element={<HrmDashboard />} />
@@ -101,8 +102,8 @@ function App() {
           <Route path="/icon" element={<Icon />} />
           <Route path="/map" element={<Map />} />
         </Route>
-        <Route path="/login" element={<Login />} />
-        <Route path="/login2" element={<Login2 />} />
+
+        {/* <Route path="/login2" element={<Login2 />} />
         <Route path="/login3" element={<Login3 />} />
         <Route path="/registration" element={<Registration />} />
         <Route path="/registration2" element={<Registration2 />} />
@@ -120,7 +121,7 @@ function App() {
         <Route path="/comingSoon2" element={<ComingSoon2 />} />
         <Route path="/pricingTable" element={<PricingTable />} />
         <Route path="/pricingTable2" element={<PricingTable2 />} />
-        <Route path="/underConstruction" element={<UnderConstruction />} />
+        <Route path="/underConstruction" element={<UnderConstruction />} /> */}
       </Routes>
     </Router>
   );

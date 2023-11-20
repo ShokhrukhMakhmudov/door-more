@@ -48,7 +48,7 @@ const AppsPart = () => {
           isMainDropdownOpen ? "show" : ""
         }`}
         onClick={toggleMainDropdown}>
-        Apps
+        Панель управления
       </Link>
       <ul
         className={`sidebar-link-group 
@@ -207,46 +207,15 @@ const AppsPart = () => {
             </li>
           </ul>
         </li>
-        {/* <li className="sidebar-dropdown-item">
-          <NavLink to="/calendar" className="sidebar-link">
-            <span className="nav-icon">
-              <i className="fa-light fa-calendar"></i>
-            </span>{' '}
-            <span className="sidebar-txt">Calendar</span>
-          </NavLink>
-        </li>
-        <li className="sidebar-dropdown-item">
-          <NavLink to="/chat" className="sidebar-link">
-            <span className="nav-icon">
-              <i className="fa-light fa-messages"></i>
-            </span>{' '}
-            <span className="sidebar-txt">Chat</span>
-          </NavLink>
-        </li>
-        <li className="sidebar-dropdown-item">
-          <NavLink to="/email" className="sidebar-link">
-            <span className="nav-icon">
-              <i className="fa-light fa-envelope"></i>
-            </span>{' '}
-            <span className="sidebar-txt">Email</span>
-          </NavLink>
-        </li> */}
+
         <li className="sidebar-dropdown-item">
           <NavLink to="/invoices" className="sidebar-link">
             <span className="nav-icon">
               <i className="fa-light fa-file-invoice"></i>
             </span>{" "}
-            <span className="sidebar-txt">Invoices</span>
+            <span className="sidebar-txt">Cчета</span>
           </NavLink>
         </li>
-        {/* <li className="sidebar-dropdown-item">
-          <NavLink to="/contacts" className="sidebar-link">
-            <span className="nav-icon">
-              <i className="fa-light fa-user-plus"></i>
-            </span>{" "}
-            <span className="sidebar-txt">Contacts</span>
-          </NavLink>
-        </li>       */}
       </ul>
     </li>
   );

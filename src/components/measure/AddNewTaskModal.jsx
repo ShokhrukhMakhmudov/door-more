@@ -25,7 +25,7 @@ const AddNewTaskModal = ({
       };
   const [task, setTask] = useState(initialValue);
   const [file, setFile] = useState(null);
-  const [fileId, setFileId] = useState(Math.floor(Math.random() * 100));
+  const [fileId, setFileId] = useState(Math.floor(Math.random() * 10000));
   console.log(fileId);
 
   const createTask = async () => {
