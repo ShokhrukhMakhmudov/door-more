@@ -21,7 +21,7 @@ const DashboardPart = () => {
           isMainDropdownOpen ? "show" : ""
         }`}
         onClick={toggleMainDashDropdown}>
-        Панель управления
+        Дашбоард
       </Link>
       <ul
         className={`sidebar-link-group ${
@@ -34,7 +34,7 @@ const DashboardPart = () => {
             : ""
         }`}>
         <li className="sidebar-dropdown-item">
-          <NavLink to="/" className="sidebar-link">
+          <NavLink to="/home" className="sidebar-link">
             <span className="nav-icon">
               <i className="fa-light fa-cart-shopping-fast"></i>
             </span>{" "}
@@ -49,14 +49,14 @@ const DashboardPart = () => {
             <span className="sidebar-txt">CRM</span>
           </NavLink>
         </li>
-        <li className="sidebar-dropdown-item">
+        {/* <li className="sidebar-dropdown-item">
           <NavLink to="/hrmDashboard" className="sidebar-link">
             <span className="nav-icon">
               <i className="fa-light fa-user-tie"></i>
             </span>{" "}
             <span className="sidebar-txt">HRM</span>
           </NavLink>
-        </li>
+        </li> */}
       </ul>
     </li>
   );

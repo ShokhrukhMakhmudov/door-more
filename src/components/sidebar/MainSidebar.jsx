@@ -72,14 +72,18 @@ const MainSidebar = () => {
       <div className="main-menu">
         {shouldUseOverlayScrollbars ? (
           <OverlayScrollbarsComponent className="sidebar-menu">
-            {userRole.role == "admin" && <AppsPart />}
+            {userRole.role == "admin" && (
+              <>
+                <DashboardPart />
+                <AppsPart />
+              </>
+            )}
             {userRole.role == "manager" && <ManagerPart />}
             {userRole.role == "measurer" && <MeasurePart />}
             {userRole.role == "call_center" && <CallCenterPart />}
           </OverlayScrollbarsComponent>
         ) : (
           <>
-            <DashboardPart />
             <AppsPart />
             <PagesPart />
             <ComponentsPart />
